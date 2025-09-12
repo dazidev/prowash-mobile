@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { UserProfileViewModel } from "../../viewmodels/userProfile/UserProfileViewModel";
@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ProfileStackParamList } from "../../navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import CleaningBackground from "../components/CleaningBackground";
+import { AuthContext } from "../../context/AuthContext";
 
 const DATA = [
   {
@@ -44,6 +45,7 @@ const DATA = [
 type ItemProps = {title: string, color: string, icon: string, id: string}
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ProfileHome'>
 export const UserProfileScreen = () => {
+  const { user } = useContext(AuthContext)
   const navigation = useNavigation<NavigationProp>()
   const { handleOptions } = UserProfileViewModel()
 
@@ -97,7 +99,7 @@ export const UserProfileScreen = () => {
 
         </View>
         <Text style={styles.titleName}>
-          Juan D'Agostini
+          {`${user?.name} ${user?.lastname}`}
         </Text>
       </View>
       <View style={styles.containerOptions}>

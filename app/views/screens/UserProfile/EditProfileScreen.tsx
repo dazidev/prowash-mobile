@@ -1,43 +1,51 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import type { ProfileStackParamList } from '../../../navigation/navigation.types'
 import CleaningBackground from "../../components/CleaningBackground";
 import { InputCustom } from "../../components/InputCustom";
 import { EditProfileViewModel } from "../../../viewmodels/userProfile/EditProfileViewModel";
+import { ButtomCustom } from "../../components/ButtomCustom";
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'EditProfile'>;
 
 export const EditProfileScreen = () => {
   const navigation = useNavigation<NavigationProp>()
-  const { fieldValue, setFieldValue } = EditProfileViewModel()
+  const { 
+    fieldValue,
+    setFieldValue,
+    error,
+    validateText,
+    changes,
+    saveChanges
+  } = EditProfileViewModel()
 
+  
 
   return (
     <>
       <CleaningBackground/>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
+
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>My personal information</Text>
+        </View>
         
         <View style={styles.containerOptions}>
           <InputCustom 
             title={'First name*'}
             value={fieldValue.name}
-            onChangeText={ (text) => {
-              const onlyLetters = text.replace(/[^A-Za-z\s]/g, "")
-              setFieldValue((prev) => ({...prev, name: onlyLetters}))
-            }}
-            error=""
+            onChangeText={ (text) => validateText(text, "name") }
+            error={error.name}
           />
           <InputCustom
             title={'Last name*'}
             value={fieldValue.lastname}
-            onChangeText={ (text) => {
-              const onlyLetters = text.replace(/[^A-Za-z\s]/g, "")
-              setFieldValue((prev) => ({...prev, name: onlyLetters}))
-            }}
+            onChangeText={ (text) => validateText(text, "lastname") }
+            error={error.lastname}
           />
           <InputCustom 
             title={'Email*'}
@@ -46,17 +54,58 @@ export const EditProfileScreen = () => {
             block={true}
             successMessage="Email successfully verified"
           />
-          <InputCustom 
-            title={'Phone number'}
-            value={fieldValue.phoneNumber}
-            onChangeText={ (text) => setFieldValue((prev) => ({...prev, phoneNumber: text}))}
-          />
+          { fieldValue.phoneNumber && (
+              <InputCustom 
+                title={'Phone number'}
+                value={fieldValue.phoneNumber}
+                onChangeText={ (text) => setFieldValue((prev) => ({...prev, phoneNumber: text}))}
+              />
+            )
+          }
+          { !fieldValue.phoneNumber && (
+              <ButtomCustom
+                title="Add phone number"
+                colorTitle="#11bf22"
+              />
+            )
+          }
+          
+          <TouchableOpacity 
+            onPress={saveChanges} 
+            style={[styles.saveButton, {backgroundColor: changes ? '#c8ff01' : '#efefef'}]}
+            disabled={!changes}
+          >
+            <Text style={[styles.saveText, {color: changes ? 'black' : '#a8a6a6'}]}>Save</Text>
+          </TouchableOpacity>
         </View>
 
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>More settings</Text>
         </View>
-      </View>
+
+        <View style={styles.containerOptions}>
+          <ButtomCustom
+            title="Change password"
+            colorTitle="black"
+          />
+          <ButtomCustom
+            title="Change email"
+            colorTitle="black"
+          />
+          { !fieldValue.phoneNumber && ( //cambiar cuando ya este funcionando lo del número
+              <ButtomCustom
+                title="Change phone number"
+                colorTitle="black"
+              />
+            )
+          }
+          <ButtomCustom
+            title="Delete account"
+            colorTitle="red"
+          />
+        </View>
+        <View style={{margin: '5%'}}></View>
+      </ScrollView>
     </>
   )
 }
@@ -65,8 +114,20 @@ const { width, height } = Dimensions.get('window')
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    display: 'flex',
+    flex: 1,
+    padding: '5%',
     marginTop: 20,
+  },
+  titleContainer: {
+    position: 'relative',
+    backgroundColor: '#0D47A1',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginBottom: 10,
   },
   containerOptions: {
     position: 'relative',
@@ -75,14 +136,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20
+    paddingVertical: 20,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 44,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#0D47A1',
+    color: '#FFF',
     textAlign: 'left',
-    marginTop: 100,
   },
   subtitle: {
     fontSize: 22,
@@ -98,6 +159,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
   },
+  saveButton: {
+    position: 'relative',
+    width: '90%',
+    height: 60,
+    backgroundColor: '#c8ff01',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   backButton: {
     marginTop: 20,
     marginLeft: 10,
@@ -105,6 +175,11 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 60,
     color: '#0D47A1',
+  },
+  saveText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'black'
   },
   error: {
     color: '#D9363E',
