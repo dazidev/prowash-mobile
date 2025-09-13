@@ -102,7 +102,7 @@ const AppTabNavigator = () => (
       component={ProfileNavigator}
       options={({ route }) => {
         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-        const hideOnRoutes = ["EditProfile"]
+        const hideOnRoutes = ["EditProfile", "ChangePassword"]
         return {
           tabBarStyle: hideOnRoutes.includes(routeName)
             ? { display: "none" }

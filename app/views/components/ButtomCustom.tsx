@@ -8,7 +8,7 @@ type Props = {
 
 export const ButtomCustom: React.FC<Props>  = ({ title, colorTitle, onPress }: Props) => {
   return (
-    <TouchableOpacity onPress={() => {}} style={styles.customButton}>
+    <TouchableOpacity onPress={onPress} style={styles.customButton}>
       <Text style={[styles.text, {color: colorTitle}]}>{title}</Text>
     </TouchableOpacity>
   )

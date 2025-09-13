@@ -36,13 +36,12 @@ export const EditProfileViewModel = () => {
     const optionName = option === 'name' ? 'Name' : 'Last name'
     if (onlyLetters === '') setError((prev) => ({...prev, [option]: `*${optionName} is required.`}))
   }
-
+ 
   const saveChanges = async () => {
     if ( fieldValue?.name !== '' && fieldValue?.lastname !== '') {
       const response: UserEditInfoResponseInterface = await UserService.editPersonalInfo(user?.id as string, fieldValue.name, fieldValue.lastname)
       if (response.success) {
-        setUser({...user!, name: response.data.name})
-        setUser({...user!, lastname: response.data.lastname})
+        setUser({...user!, name: response.data.name, lastname: response.data.lastname})
       }
     }
   }

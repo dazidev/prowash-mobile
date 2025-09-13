@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { StyleSheet, Text, TextInput, View } from "react-native"
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Ionicons from "react-native-vector-icons/Ionicons"
 
 type Props = {
@@ -9,13 +9,21 @@ type Props = {
   error?: string
   block?: boolean
   successMessage?: string
+  password?: boolean
+  onBlur?: () => void
 }
 
-export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error, block, successMessage}: Props) => {
+export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error, block, successMessage, password, onBlur}: Props) => {
   const [isFocused, setIsFocused] = useState(false)
+  const [visible, setVisible] = useState(false)
 
   const verifiedField = () => {
     setIsFocused(false)
+    onBlur?.()
+  }
+
+  const onIcon = () => {
+    setVisible(!visible)
   }
 
   return (
@@ -27,6 +35,7 @@ export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error,
           value={value}
           style={[
             styles.input,
+            {paddingRight: password ? 50 : 15},
             isFocused ? styles.inputFocused : styles.inputBlur,
             error 
               ? styles.inputError 
@@ -36,10 +45,22 @@ export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error,
           onFocus={ () => setIsFocused(true)}
           onBlur={ verifiedField }
           onChangeText={ onChangeText }
-          autoCapitalize="words"
+          autoCapitalize={password ? "none" : "words"}
           editable={!block}
+          secureTextEntry={password && !visible}
+          spellCheck={false}
         />
         {block && <Ionicons name={'lock-closed-outline'} size={32} color={"#c4c4c4"} style={styles.icon}/>}
+        {password && (
+          <TouchableOpacity onPress={onIcon}>
+            <Ionicons 
+              name={visible ? 'eye-off-outline' : 'eye-outline'} 
+              size={32}
+              color={isFocused ? "black" : "#c4c4c4"}
+              style={styles.iconTouch}
+            />
+          </TouchableOpacity>
+        )}
         
       </View>
       {error && <Text style={styles.error}>{error}</Text>}
@@ -91,6 +112,17 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   icon : {
-    marginLeft: -50
+    right: 40,
+    top: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconTouch : {
+    position: 'absolute',
+    right: 10,
+    top: -15,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 })

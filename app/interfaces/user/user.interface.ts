@@ -7,3 +7,8 @@ interface UserEditInfoResponseInterface {
     contact_number: string
   }
 }
+
+interface UserChangePasswordResponseInterface {
+  success: boolean
+  error?: string
+}

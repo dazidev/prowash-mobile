@@ -68,7 +68,7 @@ const RegisterScreen = () => {
         />
         {!validations.lastname && (
           <Text style={styles.error}>
-            Lastname must be 2 to 30 characters long and can only contain letters, spaces, hyphens, or apostrophes.
+            Last name must be 2 to 30 characters long and can only contain letters, spaces, hyphens, or apostrophes.
           </Text>
         )}
         <TextInput
