@@ -26,97 +26,98 @@ export const EditProfileScreen = () => {
 
   const onSave = () => {
     // TODO: EL NOTIFREF NO PUEDE IR ACA, MANEJAR LOS ERRORES.
-    notifRef.current?.show('Changes saved successfully');
+    notifRef.current?.show('Changes saved successfully', 'success');
     saveChanges()
   }
 
   return (
     <>
       <CleaningBackground/>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
 
         <TopNotification ref={notifRef} />
 
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>My personal information</Text>
-        </View>
-        
-        <View style={styles.containerOptions}>
-          <InputCustom 
-            title={'First name*'}
-            value={fieldValue.name}
-            onChangeText={ (text) => validateText(text, "name") }
-            error={error.name}
-          />
-          <InputCustom
-            title={'Last name*'}
-            value={fieldValue.lastname}
-            onChangeText={ (text) => validateText(text, "lastname") }
-            error={error.lastname}
-          />
-          <InputCustom 
-            title={'Email*'}
-            value={fieldValue.email}
-            onChangeText={ (text) => setFieldValue((prev) => ({...prev, email: text}))}
-            block={true}
-            successMessage="Email successfully verified"
-          />
-          { fieldValue.phoneNumber && (
-              <InputCustom 
-                title={'Phone number'}
-                value={fieldValue.phoneNumber}
-                onChangeText={ (text) => setFieldValue((prev) => ({...prev, phoneNumber: text}))}
-              />
-            )
-          }
-          { !fieldValue.phoneNumber && (
-              <ButtomCustom
-                title="Add phone number"
-                colorTitle="#11bf22"
-              />
-            )
-          }
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>My personal information</Text>
+          </View>
           
-          <TouchableOpacity 
-            onPress={onSave} 
-            style={[styles.saveButton, {backgroundColor: changes ? '#c8ff01' : '#efefef'}]}
-            disabled={!changes}
-          >
-            <Text style={[styles.saveText, {color: changes ? 'black' : '#a8a6a6'}]}>Save</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.containerOptions}>
+            <InputCustom 
+              title={'First name*'}
+              value={fieldValue.name}
+              onChangeText={ (text) => validateText(text, "name") }
+              error={error.name}
+            />
+            <InputCustom
+              title={'Last name*'}
+              value={fieldValue.lastname}
+              onChangeText={ (text) => validateText(text, "lastname") }
+              error={error.lastname}
+            />
+            <InputCustom 
+              title={'Email*'}
+              value={fieldValue.email}
+              onChangeText={ (text) => setFieldValue((prev) => ({...prev, email: text}))}
+              block={true}
+              successMessage="Email successfully verified"
+            />
+            { fieldValue.phoneNumber && (
+                <InputCustom 
+                  title={'Phone number'}
+                  value={fieldValue.phoneNumber}
+                  onChangeText={ (text) => setFieldValue((prev) => ({...prev, phoneNumber: text}))}
+                />
+              )
+            }
+            { !fieldValue.phoneNumber && (
+                <ButtomCustom
+                  title="Add phone number"
+                  colorTitle="#11bf22"
+                />
+              )
+            }
+            
+            <TouchableOpacity 
+              onPress={onSave} 
+              style={[styles.saveButton, {backgroundColor: changes ? '#c8ff01' : '#efefef'}]}
+              disabled={!changes}
+            >
+              <Text style={[styles.saveText, {color: changes ? 'black' : '#a8a6a6'}]}>Save</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>More settings</Text>
-        </View>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>More settings</Text>
+          </View>
 
-        <View style={styles.containerOptions}>
-          <ButtomCustom
-            title="Change password"
-            colorTitle="black"
-            onPress={() => navigation.navigate('ChangePassword')}
-          />
-          <ButtomCustom
-            title="Change email"
-            colorTitle="black"
-          />
-          { !fieldValue.phoneNumber && ( //cambiar cuando ya este funcionando lo del número
-              <ButtomCustom
-                title="Change phone number"
-                colorTitle="black"
-              />
-            )
-          }
-          <ButtomCustom
-            title="Delete account"
-            colorTitle="red"
-          />
-        </View>
-        <View style={{margin: '5%'}}></View>
-      </ScrollView>
+          <View style={styles.containerOptions}>
+            <ButtomCustom
+              title="Change password"
+              colorTitle="black"
+              onPress={() => navigation.navigate('ChangePassword')}
+            />
+            <ButtomCustom
+              title="Change email"
+              colorTitle="black"
+            />
+            { !fieldValue.phoneNumber && ( //cambiar cuando ya este funcionando lo del número
+                <ButtomCustom
+                  title="Change phone number"
+                  colorTitle="black"
+                />
+              )
+            }
+            <ButtomCustom
+              title="Delete account"
+              colorTitle="red"
+            />
+          </View>
+        </ScrollView>
+      </View>
     </>
   )
 }
@@ -127,7 +128,8 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flex: 1,
-    padding: '5%',
+    paddingHorizontal: '5%',
+    paddingTop: '5%',
     marginTop: 20,
   },
   titleContainer: {

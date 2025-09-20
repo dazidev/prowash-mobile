@@ -10,6 +10,10 @@ import { EditProfileScreen } from "../views/screens/UserProfile/EditProfileScree
 import { ChangeEmailAddressScreen } from "../views/screens/UserProfile/ChangeEmailAddressScreen";
 import { ChangePasswordScreen } from "../views/screens/UserProfile/ChangePasswordScreen";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { TermsAndConditionsScreen } from "../views/screens/UserProfile/TermsAndConditionsScreen";
+import { ManageHousesScreen } from "../views/screens/UserProfile/ManageHousesScreen";
+import AddHouseScreen from "../views/screens/UserProfile/AddHouseScreen";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 const Tab = createBottomTabNavigator<AppParamList>()
 const Home = createNativeStackNavigator<HomeStackParamList>()
@@ -34,19 +38,23 @@ const ServicesNavigator = () => {
 
 const ProfileNavigator = () => {
   return (
-    <Profile.Navigator screenOptions={{ headerShown: false }}>
-      <Profile.Screen name="ProfileHome" component={UserProfileScreen}/>
-      <Profile.Screen name="EditProfile" component={EditProfileScreen}/>
-      <Profile.Screen name="ChangeEmail" component={ChangeEmailAddressScreen}/>
-      <Profile.Screen name="ChangePassword" component={ChangePasswordScreen}/>
-    </Profile.Navigator>
+    <ActionSheetProvider>
+      <Profile.Navigator screenOptions={{ headerShown: false }}>
+        <Profile.Screen name="ProfileHome" component={UserProfileScreen}/>
+        <Profile.Screen name="EditProfile" component={EditProfileScreen}/>
+        <Profile.Screen name="ChangeEmail" component={ChangeEmailAddressScreen}/>
+
+        <Profile.Screen name="ChangePassword" component={ChangePasswordScreen}/>
+        <Profile.Screen name="TermsConditions" component={TermsAndConditionsScreen}/>
+        <Profile.Screen name="ManageHouses" component={ManageHousesScreen}/>
+        <Profile.Screen name="AddHouse" component={AddHouseScreen}/>
+      </Profile.Navigator>
+    </ActionSheetProvider>
   )
 }
 
 const AppTabNavigator = () => (
-  <Tab.Navigator 
-    //screenOptions={{headerShown: false}}
-    //tabBar={(props) => <TabBarCustom {...props}/>}
+  <Tab.Navigator
     screenOptions = {({ route }) => {
       const alignMap = {
         HomeTab: "flex-start",
@@ -102,7 +110,7 @@ const AppTabNavigator = () => (
       component={ProfileNavigator}
       options={({ route }) => {
         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-        const hideOnRoutes = ["EditProfile", "ChangePassword"]
+        const hideOnRoutes = ["EditProfile", "ChangePassword", "TermsConditions", "ManageHouses", "AddHouse"]
         return {
           tabBarStyle: hideOnRoutes.includes(routeName)
             ? { display: "none" }

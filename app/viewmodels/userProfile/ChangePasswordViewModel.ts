@@ -21,7 +21,6 @@ const ChangePasswordViewModel = () => {
     repeatNewPassword: ''
   })
   const [changes, setChanges] = useState(false)
-  const [error, setError] = useState(false)
 
   useEffect(() => {
     if (!regularExp.password.test(fieldValue.password)) return setChanges(false)
@@ -78,7 +77,8 @@ const ChangePasswordViewModel = () => {
     fieldError,
     verifiedFormatPassword,
     changes,
-    saveChanges
+    saveChanges,
+    setChanges
   }
 }
 

@@ -7,6 +7,7 @@ import { InputCustom } from "../../components/InputCustom";
 import ChangePasswordViewModel from "../../../viewmodels/userProfile/ChangePasswordViewModel";
 import { useRef } from "react";
 import TopNotification, { TopNotificationHandle } from "../../components/overlays/TopNotification";
+import { colors } from "../../../theme/colors";
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ChangePassword'>;
 
@@ -19,7 +20,8 @@ export const ChangePasswordScreen = () => {
     validateField,
     verifiedFormatPassword,
     changes,
-    saveChanges
+    saveChanges,
+    setChanges
   } = ChangePasswordViewModel()
   const notifRef = useRef<TopNotificationHandle>(null);
 
@@ -28,6 +30,7 @@ export const ChangePasswordScreen = () => {
     if (!result.success) return notifRef.current?.show(result.message!, 'error');
       
     notifRef.current?.show('Changes saved successfully', 'success');
+    setChanges(false)
   }
 
   return (
@@ -75,10 +78,10 @@ export const ChangePasswordScreen = () => {
 
           <TouchableOpacity 
             onPress={onSave} 
-            style={[styles.saveButton, {backgroundColor: changes ? '#c8ff01' : '#efefef'}]}
+            style={[styles.saveButton, {backgroundColor: changes ? colors.principalGreen : colors.bgInactive}]}
             disabled={!changes}
           >
-            <Text style={[styles.saveText, {color: changes ? 'black' : '#a8a6a6'}]}>Save</Text>
+            <Text style={[styles.saveText, {color: changes ? 'black' : colors.itemInactive}]}>Save</Text>
           </TouchableOpacity>
 
         </View>
@@ -96,7 +99,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     position: 'relative',
-    backgroundColor: '#0D47A1',
+    backgroundColor: colors.principalBlue,
     borderRadius: 15,
     justifyContent: 'center',
     alignContent: 'center',
@@ -107,12 +110,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: colors.principalWhite,
     textAlign: 'left',
   },
   optionsContainer: {
     position: 'relative',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.principalWhite,
     borderRadius: 15,
     justifyContent: 'center',
     alignContent: 'center',
@@ -126,13 +129,13 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 60,
-    color: '#0D47A1',
+    color: colors.principalBlue,
   },
   saveButton: {
     position: 'relative',
     width: '90%',
     height: 60,
-    backgroundColor: '#c8ff01',
+    backgroundColor: colors.principalGreen,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',

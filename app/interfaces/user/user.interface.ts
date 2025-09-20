@@ -1,4 +1,4 @@
-interface UserEditInfoResponseInterface {
+export interface UserEditInfoResponseInterface {
   success: boolean
   data: {
     name: string
@@ -8,7 +8,23 @@ interface UserEditInfoResponseInterface {
   }
 }
 
-interface UserChangePasswordResponseInterface {
+export interface UserChangePasswordResponseInterface {
   success: boolean
   error?: string
 }
+
+export interface UserHouseResponseItem {
+  id: string
+  name: string
+  street: string
+  complement_street: string
+  city: string
+  state: string
+  zipcode: string
+}
+
+export interface UserHousesResponse {
+  success: boolean;
+  data?: UserHouseResponseItem[]
+  error?: string
+};

@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Ionicons from "react-native-vector-icons/Ionicons"
+import { colors } from "../../theme/colors"
 
 type Props = {
   title: string
@@ -11,9 +12,10 @@ type Props = {
   successMessage?: string
   password?: boolean
   onBlur?: () => void
+  editable?: boolean
 }
 
-export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error, block, successMessage, password, onBlur}: Props) => {
+export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error, block, successMessage, password, onBlur, editable}: Props) => {
   const [isFocused, setIsFocused] = useState(false)
   const [visible, setVisible] = useState(false)
 
@@ -25,6 +27,14 @@ export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error,
   const onIcon = () => {
     setVisible(!visible)
   }
+
+  const isEditable = () => {
+    if (block) {
+      editable = false
+    }
+  }
+
+  isEditable()
 
   return (
     <View style={styles.optionContainer}>
@@ -40,23 +50,23 @@ export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error,
             error 
               ? styles.inputError 
               : isFocused ? styles.inputFocused : styles.inputBlur,
-            block ? {backgroundColor: '#efefef', color: '#a8a6a6'} : {}
+            block ? {backgroundColor: colors.bgInactive, color: colors.itemInactive} : {}
           ]}
           onFocus={ () => setIsFocused(true)}
           onBlur={ verifiedField }
           onChangeText={ onChangeText }
           autoCapitalize={password ? "none" : "words"}
-          editable={!block}
+          editable={editable}
           secureTextEntry={password && !visible}
           spellCheck={false}
         />
-        {block && <Ionicons name={'lock-closed-outline'} size={32} color={"#c4c4c4"} style={styles.icon}/>}
+        {block && <Ionicons name={'lock-closed-outline'} size={32} color={colors.inputGray} style={styles.icon}/>}
         {password && (
           <TouchableOpacity onPress={onIcon}>
             <Ionicons 
-              name={visible ? 'eye-off-outline' : 'eye-outline'} 
+              name={visible ? 'eye-off-outline' : 'eye-outline'}
               size={32}
-              color={isFocused ? "black" : "#c4c4c4"}
+              color={isFocused ? "black" : colors.inputGray}
               style={styles.iconTouch}
             />
           </TouchableOpacity>
@@ -77,12 +87,13 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderColor: "#c4c4c4",
+    borderColor: colors.inputGray,
   },
   input: {
     width: '100%',
     height: 60,
-    borderColor: '#c4c4c4',
+    borderColor: colors.inputGray,
+    backgroundColor: colors.principalWhite,
     fontSize: 18,
     paddingLeft: 15,
     paddingVertical: 0,
@@ -95,7 +106,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   inputBlur: {
-    borderColor: '#c4c4c4',
+    borderColor: colors.inputGray,
   },
   inputError: {
     borderColor: 'red',
@@ -106,7 +117,7 @@ const styles = StyleSheet.create({
   },
   successMessage: {
     fontSize: 13,
-    color: '#11bf22'
+    color: colors.itemSuccess
   },
   title: {
     fontSize: 15

@@ -13,6 +13,10 @@ export const UserProfileViewModel = () => {
     switch (option) {
       case 1:
         return "EditProfile"
+      case 3:
+        return "ManageHouses"
+      case 4:
+        return "TermsConditions"
       case 5:
         Alert.alert(
          "Confirm logout",

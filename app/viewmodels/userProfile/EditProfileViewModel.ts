@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../context/AuthContext"
 import { UserService } from "../../services/userService"
 import { IUserLoginResponse } from "../../interfaces/auth/AuthInterface"
+import { UserEditInfoResponseInterface } from "../../interfaces/user/user.interface"
 
 
 export const EditProfileViewModel = () => {

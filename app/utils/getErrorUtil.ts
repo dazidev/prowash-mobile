@@ -10,6 +10,7 @@ export enum ServerErrorCode {
   TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS',
   CODE_NOT_FOUND = 'CODE_NOT_FOUND',
   CODE_EXPIRED = 'CODE_EXPIRED',
+  INVALID_PASSWORD = 'INVALID_PASSWORD',
 }
 
 export const ServerErrorMessages: Record<ServerErrorCode, string> = {
@@ -24,6 +25,7 @@ export const ServerErrorMessages: Record<ServerErrorCode, string> = {
   [ServerErrorCode.TOO_MANY_REQUESTS]: 'TOO_MANY_REQUESTS',
   [ServerErrorCode.CODE_NOT_FOUND]: 'CODE_NOT_FOUND',
   [ServerErrorCode.CODE_EXPIRED]: 'CODE_EXPIRED',
+  [ServerErrorCode.INVALID_PASSWORD]: 'The current password is invalid.',
 }
 
 export const getErrorUtil = (code: ServerErrorCode): string => {

@@ -17,6 +17,9 @@ export type ProfileStackParamList = {
   EditProfile: undefined
   ChangeEmail: undefined
   ChangePassword: undefined
+  TermsConditions: undefined
+  ManageHouses: undefined
+  AddHouse: undefined
 }
 
 export type AppParamList = {

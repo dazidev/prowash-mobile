@@ -7,6 +7,7 @@ import { ProfileStackParamList } from "../../navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import CleaningBackground from "../components/CleaningBackground";
 import { AuthContext } from "../../context/AuthContext";
+import { colors } from "../../theme/colors";
 
 const DATA = [
   {
@@ -96,7 +97,7 @@ export const UserProfileScreen = () => {
       <CleaningBackground/>
       <View style={styles.containPhotoProfile}>
         <View style={styles.containerPhoto}>
-
+          <Text style={styles.textPhoto}>{`${user?.name.trim().charAt(0)}${user?.lastname.trim().charAt(0)}`}</Text>
         </View>
         <Text style={styles.titleName}>
           {`${user?.name} ${user?.lastname}`}
@@ -118,12 +119,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#F6F4F5',
   },
   titleName: {
     paddingTop: 20,
     fontSize: 30,
-    color: 'white',
+    color: colors.principalWhite,
     textAlign: 'center',
     fontWeight: 'bold',
   },
@@ -136,9 +136,18 @@ const styles = StyleSheet.create({
   containerPhoto: {
     height: 140,
     width: 140,
-    borderRadius: '100%',
-    borderColor: 'white',
-    borderWidth: 3,
+    borderRadius: 70,
+    backgroundColor: colors.darkGreen,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textPhoto: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 70,
+    fontSize: 80,
+    fontWeight: 'bold',
+    color: colors.principalWhite,
   },
   item: {
     flex: 1,
@@ -153,7 +162,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     top: -60,
     marginHorizontal: '8%',
-    backgroundColor: '#fff',
+    backgroundColor: colors.principalWhite,
     borderRadius: 15,
   }
 })
