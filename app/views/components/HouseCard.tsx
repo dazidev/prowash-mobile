@@ -10,10 +10,13 @@ type Props = {
   city: string
   state: string
   zipcode: string
+  onDeleteHouse: () => Promise<void>
+  houseId: string
+  userId: string
 }
 
 
-const HouseCard = ({name, street, complementStreet, city, state, zipcode}: Props) => {
+const HouseCard = ({name, street, complementStreet, city, state, zipcode, onDeleteHouse, houseId, userId}: Props) => {
 
   return (
     <View style={styles.cardContainer}>
@@ -26,7 +29,7 @@ const HouseCard = ({name, street, complementStreet, city, state, zipcode}: Props
           <TouchableOpacity style={styles.icon}>
             <Ionicons name={'create-outline'} size={28} color={'black'}/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.icon}>
+          <TouchableOpacity style={styles.icon} onPress={() => void onDeleteHouse()}>
             <Ionicons name={'trash-outline'} size={28} color={'red'}/>
           </TouchableOpacity>
         </View>

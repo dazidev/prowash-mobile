@@ -1,6 +1,7 @@
 import axios from "axios"
 import { api } from "./axiosConfig"
-import { UserChangePasswordResponseInterface, UserHouseResponseItem, UserHousesResponse } from "../interfaces/user/user.interface"
+import { UserBasicResponseInterface, UserHouseResponseItem, UserHousesResponse } from "../interfaces/user/user.interface"
+import { Asset } from "react-native-image-picker"
 
 
 export class UserService {
@@ -25,7 +26,7 @@ export class UserService {
     }
   }
 
-  static async changeUserPassword (id: string, currentPassword: string, newPassword: string, repeatNewPassword: string): Promise<UserChangePasswordResponseInterface> {
+  static async changeUserPassword (id: string, currentPassword: string, newPassword: string, repeatNewPassword: string): Promise<UserBasicResponseInterface> {
     try {
       const jsonInfo = {
         "currentPassword": currentPassword,
@@ -83,5 +84,64 @@ export class UserService {
       }
     }
   }
+
+  static async deleteUserHouse (userId: string, houseId: string): Promise<UserBasicResponseInterface> {
+    try {
+      const response = await api.delete(`/api/user/${userId}/house/${houseId}`)
+      return response.data
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        return error.response.data
+      }
+      return {
+        success: false,
+        error: 'NETWORK_ERROR',
+      }
+    }
+  }
+
+  static async uploadHousePhoto (image: Asset[], houseId: string): Promise<object> { // tipiar la respuesta
+    // TODO: manejar las notificaciones de success o error a nivel global de la app
+    const houseImage = image?.[0]
+
+    if (!houseImage.uri || !houseImage.fileSize || !houseImage.type) return {}
+
+    const ext = (houseImage.fileName?.split('.').pop() ?? 'jpg').toLowerCase()
+
+    const jsonInfo = {
+      mime: houseImage.type,
+      ext,
+      size: houseImage.fileSize
+    }
+
+    let signRes
+
+    try {
+      signRes = await api.post(`/api/user/uploads/sign`, jsonInfo)
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) return error.response.data
+      return {  success: false, error: 'NETWORK_ERROR' }
+    }
+
+    const { uploadUrl, key } = signRes.data
+
+    const imageData = await fetch(houseImage.uri).then(res => res.blob())
+    
+    await fetch(uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": houseImage.type },
+      body: imageData
+    })
+
+    try {
+      const attach = await api.post(`/api/user/houses/${houseId}/photo/attach`, { key })
+      return attach.data
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) return error.response.data
+      return {  success: false, error: 'NETWORK_ERROR' }
+    }
+  }
+
+
 
 }

@@ -8,7 +8,7 @@ export interface UserEditInfoResponseInterface {
   }
 }
 
-export interface UserChangePasswordResponseInterface {
+export interface UserBasicResponseInterface {
   success: boolean
   error?: string
 }

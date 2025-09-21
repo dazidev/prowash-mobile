@@ -15,7 +15,7 @@ type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ManageHo
 
 export const ManageHousesScreen = () => {
   const navigation = useNavigation<NavigationProp>()
-  const { getHouses, houses } = ManageHousesViewModel()
+  const { getHouses, houses, user, deleteHouse } = ManageHousesViewModel()
   const notifRef = useRef<TopNotificationHandle>(null);
   
   useEffect(() => {
@@ -28,8 +28,15 @@ export const ManageHousesScreen = () => {
   const handleAddHome = () => {
     const count = houses?.data?.length ?? 0;
     if (count < 3) return navigation.navigate('AddHouse')
-    notifRef.current?.show('You can’t add more than 3 houses', 'error');
+    notifRef.current?.show('You can’t add more than 3 houses', 'error')
       
+  }
+
+  const handleDeleteHouse = async (houseId: string) => {
+    const response = await deleteHouse(houseId)
+    if (!response.success) return notifRef.current?.show(response?.error!, 'error')
+    notifRef.current?.show('House deleted successfully', 'success')
+    getHouses()
   }
 
   return (
@@ -77,6 +84,9 @@ export const ManageHousesScreen = () => {
                     city={item.city}
                     state={item.state}
                     zipcode={item.zipcode}
+                    houseId={item.id}
+                    userId={user?.id!}
+                    onDeleteHouse={() => handleDeleteHouse(item.id)}
                   />
                 )}
                 scrollEnabled={false}

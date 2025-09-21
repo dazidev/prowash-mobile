@@ -9,6 +9,7 @@ import AddHouseViewModel, { INITIAL_HOUSE_STATE } from "../../../viewmodels/user
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import TopNotification, { TopNotificationHandle } from "../../components/overlays/TopNotification";
 import { useRef } from "react";
+import { CamaraAdapter } from "../../../config/adapters/camara.adapter";
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'AddHouse'>
 
@@ -67,6 +68,11 @@ const AddHouseScreen = () => {
     notifRef.current?.show('House saved successfully', 'success');
     setChanges(false)
     setFieldValue(() => ({...INITIAL_HOUSE_STATE}))
+  }
+
+  const takePicture = async () => {
+    const photo = await CamaraAdapter.getPicturesFromLibrary(1)
+    return photo
   }
 
   return (
@@ -139,7 +145,10 @@ const AddHouseScreen = () => {
             <View style={{paddingHorizontal: 20, alignSelf: 'flex-start'}}>
               <Text style={styles.titlePhoto}>Photo of the house</Text>
             </View>
-            <TouchableOpacity style={styles.buttomPhoto}>
+            <TouchableOpacity
+              onPress={takePicture}
+              style={styles.buttomPhoto}
+            >
               <Text style={styles.textButtomPhoto}>Tap to add photo</Text>
             </TouchableOpacity>
 
