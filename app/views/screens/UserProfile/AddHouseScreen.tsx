@@ -2,7 +2,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ProfileStackParamList } from "../../../navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import CleaningBackground from "../../components/CleaningBackground";
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { colors } from "../../../theme/colors";
 import { InputCustom } from "../../components/InputCustom";
 import AddHouseViewModel, { INITIAL_HOUSE_STATE } from "../../../viewmodels/userProfile/AddHouseViewModel";
@@ -36,7 +36,9 @@ const AddHouseScreen = () => {
     handleChangeField,
     changes,
     saveChanges,
-    setChanges } = AddHouseViewModel()
+    setChanges,
+    photo,
+    setPhoto } = AddHouseViewModel()
 
   const { showActionSheetWithOptions } = useActionSheet();
   const notifRef = useRef<TopNotificationHandle>(null);
@@ -71,8 +73,8 @@ const AddHouseScreen = () => {
   }
 
   const takePicture = async () => {
-    const photo = await CamaraAdapter.getPicturesFromLibrary(1)
-    return photo
+    const selectPhoto = await CamaraAdapter.getPicturesFromLibrary(1)
+    setPhoto(selectPhoto?.[0])
   }
 
   return (
@@ -106,7 +108,7 @@ const AddHouseScreen = () => {
               />
 
               <InputCustom
-                title="Apt, int, etc (or leave blank)"
+                title="Street 2 (or leave blank)"
                 value={fieldValue.complementStreet}
                 onChangeText={(value) => {handleChangeField(sanitizeStreet(value), 'complementStreet')}}
               />
@@ -145,12 +147,26 @@ const AddHouseScreen = () => {
             <View style={{paddingHorizontal: 20, alignSelf: 'flex-start'}}>
               <Text style={styles.titlePhoto}>Photo of the house</Text>
             </View>
-            <TouchableOpacity
-              onPress={takePicture}
-              style={styles.buttomPhoto}
-            >
-              <Text style={styles.textButtomPhoto}>Tap to add photo</Text>
-            </TouchableOpacity>
+
+            {!photo && (
+              <TouchableOpacity
+                onPress={takePicture}
+                style={styles.buttomPhoto}
+              >
+                <Text style={styles.textButtomPhoto}>Tap to add photo</Text>
+              </TouchableOpacity>
+            )}
+
+            {photo && (
+              <View style={styles.imageContainer}>
+                <Image source={{ uri: photo.uri }} style={styles.image}/>
+                <TouchableOpacity onPress={takePicture} style={styles.anotherImageButtom}>
+                  <Text style={styles.textAnotherImageButtom}>Select another photo</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            
 
             <TouchableOpacity 
               onPress={onSave} 
@@ -257,6 +273,37 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black'
   },
+  imageContainer: {
+    width: '90%',
+    height: 'auto',
+    backgroundColor: "#BFDFFF50",
+    borderWidth: 3,
+    borderStyle: 'dashed',
+    borderColor: '#006ddbff',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10
+  },
+  image: {
+    width: 300,
+    height: 200,
+    borderRadius: 5
+  },
+  anotherImageButtom: {
+    position: 'relative',
+    width: '60%',
+    height: 40,
+    backgroundColor: colors.principalGreen,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  textAnotherImageButtom: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  }
 })
 
 export default AddHouseScreen

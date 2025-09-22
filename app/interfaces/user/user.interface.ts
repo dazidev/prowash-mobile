@@ -21,10 +21,17 @@ export interface UserHouseResponseItem {
   city: string
   state: string
   zipcode: string
+  image_url?: string
 }
 
 export interface UserHousesResponse {
-  success: boolean;
+  success: boolean
   data?: UserHouseResponseItem[]
   error?: string
-};
+}
+
+export interface UserHouseResponse {
+  success: boolean
+  data: UserHouseResponseItem
+  error?: string
+}

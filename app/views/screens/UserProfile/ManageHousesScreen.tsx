@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import CleaningBackground from "../../components/CleaningBackground"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ProfileStackParamList } from "../../../navigation/navigation.types";
@@ -33,6 +33,23 @@ export const ManageHousesScreen = () => {
   }
 
   const handleDeleteHouse = async (houseId: string) => {
+    Alert.alert(
+      "Confirm delete house",
+      "Are you sure you want to delete this house?",
+      [
+        { 
+          text: 'Cancel',
+          onPress: () => {},
+        },
+        {
+          text: 'Delete',
+          onPress: () => onDeleteHouse(houseId)
+        }
+      ]
+    )
+  }
+
+  const onDeleteHouse = async (houseId: string) => {
     const response = await deleteHouse(houseId)
     if (!response.success) return notifRef.current?.show(response?.error!, 'error')
     notifRef.current?.show('House deleted successfully', 'success')
@@ -85,7 +102,7 @@ export const ManageHousesScreen = () => {
                     state={item.state}
                     zipcode={item.zipcode}
                     houseId={item.id}
-                    userId={user?.id!}
+                    imageUrl={item.image_url}
                     onDeleteHouse={() => handleDeleteHouse(item.id)}
                   />
                 )}

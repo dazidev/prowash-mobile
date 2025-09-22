@@ -10,22 +10,27 @@ type Props = {
   city: string
   state: string
   zipcode: string
-  onDeleteHouse: () => Promise<void>
+  imageUrl?: string
   houseId: string
-  userId: string
+  onDeleteHouse: () => Promise<void>
 }
 
 
-const HouseCard = ({name, street, complementStreet, city, state, zipcode, onDeleteHouse, houseId, userId}: Props) => {
+const HouseCard = ({name, street, complementStreet, city, state, zipcode, imageUrl, houseId, onDeleteHouse}: Props) => {
 
   return (
     <View style={styles.cardContainer}>
       <View style={styles.imageContainer}>
         <Image 
-          source={{uri: 'https://imgix.cosentino.com/es/wp-content/uploads/2023/07/Lumire-70-Facade-MtWaverley-vic-1.jpg?auto=format%2Ccompress&ixlib=php-3.3.0'}}
+          source={{
+            uri: imageUrl !== null
+              ? `https://images.prowash365.com/${imageUrl}` 
+              : 'https://imgix.cosentino.com/es/wp-content/uploads/2023/07/Lumire-70-Facade-MtWaverley-vic-1.jpg?auto=format%2Ccompress&ixlib=php-3.3.0'
+          }}
           style={styles.image}
         />
         <View style={styles.iconsContainer}>
+          {/*TODO: IMPLEMENTAR EL EDITAR LA CASA*/}
           <TouchableOpacity style={styles.icon}>
             <Ionicons name={'create-outline'} size={28} color={'black'}/>
           </TouchableOpacity>

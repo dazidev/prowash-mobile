@@ -100,24 +100,23 @@ export class UserService {
     }
   }
 
-  static async uploadHousePhoto (image: Asset[], houseId: string): Promise<object> { // tipiar la respuesta
+  static async uploadHousePhoto (image: Asset, houseId: string, userId: string): Promise<any> { // tipiar la respuesta
     // TODO: manejar las notificaciones de success o error a nivel global de la app
-    const houseImage = image?.[0]
 
-    if (!houseImage.uri || !houseImage.fileSize || !houseImage.type) return {}
+    if (!image.uri || !image.fileSize || !image.type) return {}
 
-    const ext = (houseImage.fileName?.split('.').pop() ?? 'jpg').toLowerCase()
+    const ext = (image.fileName?.split('.').pop() ?? 'jpg').toLowerCase()
 
     const jsonInfo = {
-      mime: houseImage.type,
+      mime: image.type,
       ext,
-      size: houseImage.fileSize
+      size: image.fileSize
     }
 
     let signRes
 
     try {
-      signRes = await api.post(`/api/user/uploads/sign`, jsonInfo)
+      signRes = await api.post(`/api/user/${userId}/uploads/sign`, jsonInfo)
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) return error.response.data
       return {  success: false, error: 'NETWORK_ERROR' }
@@ -125,11 +124,11 @@ export class UserService {
 
     const { uploadUrl, key } = signRes.data
 
-    const imageData = await fetch(houseImage.uri).then(res => res.blob())
+    const imageData = await fetch(image.uri).then(res => res.blob())
     
     await fetch(uploadUrl, {
       method: "PUT",
-      headers: { "Content-Type": houseImage.type },
+      headers: { "Content-Type": image.type },
       body: imageData
     })
 
@@ -138,7 +137,7 @@ export class UserService {
       return attach.data
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) return error.response.data
-      return {  success: false, error: 'NETWORK_ERROR' }
+      return { success: false, error: 'NETWORK_ERROR' }
     }
   }
 

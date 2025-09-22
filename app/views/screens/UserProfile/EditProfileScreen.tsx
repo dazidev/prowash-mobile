@@ -100,10 +100,10 @@ export const EditProfileScreen = () => {
               colorTitle="black"
               onPress={() => navigation.navigate('ChangePassword')}
             />
-            <ButtomCustom
+            {/*<ButtomCustom
               title="Change email"
               colorTitle="black"
-            />
+            />*/}
             { !fieldValue.phoneNumber && ( //cambiar cuando ya este funcionando lo del número
                 <ButtomCustom
                   title="Change phone number"
