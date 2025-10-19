@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, TextInput, TouchableOpacity, Text, ActivityIndicator, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, ActivityIndicator, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
 import ButtonRegisterLogin from '../../components/ButtonRegisterLogin';
 import OrSeparator from '../../components/OrSeparator';
 import BackgroundBubbles from '../../components/BackgroundBubbles';
@@ -29,7 +29,8 @@ const LoginScreen = () => {
     handleChange,
     error,
     validations,
-    handleLogin
+    handleLogin,
+    isLoading
   } = LoginViewModel();
 
   const handleButtonLogin = async () => {
@@ -44,51 +45,53 @@ const LoginScreen = () => {
 
   return (
     <>
-      <BackgroundBubbles/>
-      <View style={styles.container}>
-        <Image
-          source={require('../../../../../assets/loginLogo.png')}
-          style = {styles.image}
-          resizeMode='contain'
-        />
-        <TextInput
-          placeholder="Email"
-          value={credentials.email}
-          onChangeText={(value) => handleChange('email', value)}
+      <BackgroundBubbles />
+      <ScrollView>
+        <View style={styles.container}>
+          <Image
+            source={require('../../../../../assets/loginLogo.png')}
+            style={styles.image}
+            resizeMode='contain'
+          />
+          <TextInput
+            placeholder="Email"
+            value={credentials.email}
+            onChangeText={(value) => handleChange('email', value)}
 
-          style={styles.input}
-          placeholderTextColor="#999"
-        />
-        {!validations.email && (
-          <Text style={styles.error}>
-            The email you entered is not valid.
-          </Text>
-        )}
-        <TextInput
-          placeholder="Password"
-          value={credentials.password}
-          onChangeText={(value) => handleChange('password', value)}
-          secureTextEntry
-          style={styles.input}
-          placeholderTextColor="#999"
-        />
-        {!validations.password && (
-          <Text style={styles.error}>
-            The password must be at least 8 characters long.
-          </Text>
-        )}
-        <TouchableOpacity>
-          <Text style = {styles.link}>{'Forgot Password?'}</Text>
-        </TouchableOpacity>
-        <ButtonRegisterLogin title = 'Log In' color = '#c8ff01' onPress = {handleButtonLogin}/>
-        {!error.success && (
-          <Text style={styles.error}>
-            {error.message}
-          </Text>
-        )}
-        <OrSeparator/>
-        <ButtonRegisterLogin title = 'Create an Account' color = '#b5d2ff' onPress = {() => navigation.navigate('Register')}/>
-      </View>
+            style={styles.input}
+            placeholderTextColor="#999"
+          />
+          {!validations.email && (
+            <Text style={styles.error}>
+              The email you entered is not valid.
+            </Text>
+          )}
+          <TextInput
+            placeholder="Password"
+            value={credentials.password}
+            onChangeText={(value) => handleChange('password', value)}
+            secureTextEntry
+            style={styles.input}
+            placeholderTextColor="#999"
+          />
+          {!validations.password && (
+            <Text style={styles.error}>
+              The password must be at least 8 characters long.
+            </Text>
+          )}
+          <TouchableOpacity>
+            <Text style={styles.link}>{'Forgot Password?'}</Text>
+          </TouchableOpacity>
+          <ButtonRegisterLogin title='Log In' color='#c8ff01' isLoading={isLoading} onPress={handleButtonLogin} />
+          {!error.success && (
+            <Text style={styles.error}>
+              {error.message}
+            </Text>
+          )}
+          <OrSeparator />
+          <ButtonRegisterLogin title='Create an Account' color='#b5d2ff' isLoading={isLoading} onPress={() => navigation.navigate('Register')} />
+        </View>
+      </ScrollView>
     </>
   );
 };

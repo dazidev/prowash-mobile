@@ -1,20 +1,30 @@
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-native";
 
 type Props = {
-  title:string;
-  color:string;
+  title: string;
+  color: string;
   onPress: () => void;
+  isLoading: boolean
 }
 
-const ButtonRegisterLogin = ({title, color, onPress}:Props) => {
+const ButtonRegisterLogin = ({ title, color, onPress, isLoading }: Props) => {
+
+  const handlePress = () => {
+    if (isLoading) return
+    onPress()
+  }
+
   return (
-    <TouchableOpacity 
-      style = {[{ backgroundColor: color}, styles.button]}
-       onPress = {onPress}
+    <TouchableOpacity
+      style={[{ backgroundColor: color }, styles.button]}
+      disabled={isLoading}
+      onPress={handlePress}
     >
-      <Text style = {styles.buttonText}>
-        {title}
-      </Text>
+      {
+        isLoading === false
+          ? (<Text style={styles.buttonText}>{title} </Text>)
+          : (<ActivityIndicator color={'black'} />)
+      }
     </TouchableOpacity>
   )
 }

@@ -21,6 +21,9 @@ export const LoginViewModel = () => {
     message: ''
   })
 
+  //* loading
+  const [isLoading, setIsLoading] = useState(false)
+
   const verifyEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const verifyPassword = (password: string) => password.length >= 8 ? true : false
 
@@ -86,6 +89,7 @@ export const LoginViewModel = () => {
     error,
     setError,
     validations,
-    handleLogin
+    handleLogin,
+    isLoading
   }
 }

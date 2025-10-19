@@ -8,7 +8,7 @@ import type { AuthUserResponseInterface, UserRegisterInterface, ValidationsRegis
 
 export const useRegisterViewModel = () => {
 
-  //user
+  //* user
   const [user, setUser] = useState<UserRegisterInterface>({
     id: '',
     name: '',
@@ -17,12 +17,12 @@ export const useRegisterViewModel = () => {
     password: '',
   })
 
-  //data
+  //* data
   const [repeatPassword, setRepeatPassword] = useState('')
   const [contactNumber, setContactNumber] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  //validations
+  //* validations
   const [validations, setValidations] = useState({
     name: true,
     lastname: true,
@@ -32,6 +32,9 @@ export const useRegisterViewModel = () => {
     terms: false,
     error: ''
   })
+
+  //* loading
+  const [isLoading, setIsLoading] = useState(false)
 
   const verifyNameAndLastname = (text: string) => /^[A-Za-zÀ-ÿ\s'-]{2,30}$/.test(text)
   const verifyEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -117,6 +120,7 @@ export const useRegisterViewModel = () => {
     validations,
     setValidations,
     repeatPassword,
-    handleValidate
+    handleValidate,
+    isLoading
   };
 };
