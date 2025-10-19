@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import AuthProvider from './context/AuthProvider'
-import RootNavigator from './navigation/RootNavigator';
+import RootNavigator from './presentation/navigation/RootNavigator';
+import AuthProvider from './presentation/context/AuthProvider';
 
 const App = () => {
   return (

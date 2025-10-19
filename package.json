@@ -8,7 +8,7 @@
     "log-ios": "exec react-native log-ios",
     "log-android": "exec react-native log-android",
     "lint": "eslint .",
-    "start": "react-native start",
+    "start": "react-native start --client-logs",
     "test": "jest"
   },
   "dependencies": {
