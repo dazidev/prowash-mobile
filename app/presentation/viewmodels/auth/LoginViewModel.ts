@@ -1,13 +1,13 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { useState } from "react";
 import { AuthService, TokenService } from "../../../infrastructure";
 
 //* tipiados.
-import type { AuthTokensInterface, AuthUserResponseInterface, CredentialsInterface, HandleLoginResponseInterface, UserLoginResponseInterface } from "../../../domain";
+import { type AuthUserResponseInterface, type CredentialsInterface, type HandleLoginResponseInterface } from "../../../domain";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 
 export const LoginViewModel = () => {
-  const { setStatus, setTokens, setUser } = useContext(AuthContext)
+  const { loginUser } = useAuth()
   const [credentials, setCredentials] = useState<CredentialsInterface>({
     email: '',
     password: ''
@@ -41,12 +41,6 @@ export const LoginViewModel = () => {
     }
   }
 
-  const setDataUserContext = (user: UserLoginResponseInterface, tokens: AuthTokensInterface) => {
-    setStatus('authenticated')
-    setTokens(tokens)
-    setUser(user)
-  }
-
   const handleLogin = async (email: string, password: string): Promise<HandleLoginResponseInterface> => {
     const emailIsOk = verifyEmail(email)
     const passwordIsOk = verifyPassword(password)
@@ -66,8 +60,7 @@ export const LoginViewModel = () => {
         }
         return { success: false }
       } else {
-        setDataUserContext(response.data, response.tokens)
-        TokenService.saveTokens(response.tokens.access, response.tokens.refresh)
+        await loginUser(response.data, response.tokens)
         if (response.data.isEmailVerified === 0) {
           await AuthService.sendEmailCode(response.data.email, response.data.name, response.data.lastname, response.data.id)
         }

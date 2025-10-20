@@ -1,5 +1,4 @@
 export interface UserRegisterInterface {
-  id?: string
   name: string,
   lastname: string,
   email: string,

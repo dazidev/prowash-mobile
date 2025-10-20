@@ -3,11 +3,14 @@ import { TextInput } from 'react-native';
 import { AuthService } from '../../../infrastructure';
 
 //* tipiados.
-import type { TemplateCodeInterface } from '../../../domain';
+import { type TemplateCodeInterface } from '../../../domain';
+import { useAuth } from '../../hooks/auth/useAuth';
 
 
 
 export const useEmailVerifyViewModel = () => {
+  const { loginUser } = useAuth()
+
   const [timecode, setTimecode] = useState<number>(0)
   const [error, setError] = useState({
     success: false, 
@@ -27,6 +30,9 @@ export const useEmailVerifyViewModel = () => {
     param3: true,
     param4: true,
   })
+
+  //* loading
+  const [isLoading, setIsLoading] = useState(false)
 
   const input2 = useRef<TextInput | null>(null)
   const input3 = useRef<TextInput | null>(null)
@@ -78,6 +84,9 @@ export const useEmailVerifyViewModel = () => {
           return false
         } else return false
       } else {
+        
+        await loginUser(response.data, response.tokens)
+
         return true
       }
     } else { 
@@ -98,6 +107,8 @@ export const useEmailVerifyViewModel = () => {
     timecode,
     setTimecode,
     handleConfirm,
-    error
+    error,
+    isLoading,
+    setIsLoading
   }
 }

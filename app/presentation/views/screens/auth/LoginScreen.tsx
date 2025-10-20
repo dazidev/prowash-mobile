@@ -89,7 +89,7 @@ const LoginScreen = () => {
             </Text>
           )}
           <OrSeparator />
-          <ButtonRegisterLogin title='Create an Account' color='#b5d2ff' isLoading={isLoading} onPress={() => navigation.navigate('Register')} />
+          <ButtonRegisterLogin title='Create an Account' color='#b5d2ff' isLoading={false} onPress={() => navigation.navigate('Register')} />
         </View>
       </ScrollView>
     </>

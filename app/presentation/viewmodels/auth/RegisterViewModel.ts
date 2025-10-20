@@ -10,7 +10,6 @@ export const useRegisterViewModel = () => {
 
   //* user
   const [user, setUser] = useState<UserRegisterInterface>({
-    id: '',
     name: '',
     lastname: '',
     email: '',
@@ -45,10 +44,10 @@ export const useRegisterViewModel = () => {
     setValidations((prev) => ({ ...prev, [field]: value }))
   };
 
-  const handleValidate = ( field: keyof ValidationsRegistrerInterface, value: string ) => {
+  const handleValidate = (field: keyof ValidationsRegistrerInterface, value: string) => {
     switch (field) {
       case 'name':
-      case 'lastname': 
+      case 'lastname':
         value = value.trim()
         setUser((prev) => ({ ...prev, [field]: value }))
         handleValidation(field, verifyNameAndLastname(value))
@@ -71,47 +70,59 @@ export const useRegisterViewModel = () => {
     }
   }
 
-  const handleRegister = async ():Promise<boolean> => {
+  const handleRegister = async (): Promise<string | null> => {
     const nameIsOk = verifyNameAndLastname(user.name.trim())
     const lastnameIsOk = verifyNameAndLastname(user.lastname.trim())
     const emailIsOk = verifyEmail(user.email.trim())
     const passwordIsOk = verifyPassword(user.password!)
     const samePasswordIsOk = verifySamePassword(user.password!, repeatPassword)
 
-    setValidations((prev) => ({...prev, name: nameIsOk}))
-    setValidations((prev) => ({...prev, lastname: lastnameIsOk}))
-    setValidations((prev) => ({...prev, email: emailIsOk}))
-    setValidations((prev) => ({...prev, password: passwordIsOk}))
-    setValidations((prev) => ({...prev, samePassword: samePasswordIsOk}))
+    setValidations((prev) => ({ ...prev, name: nameIsOk }))
+    setValidations((prev) => ({ ...prev, lastname: lastnameIsOk }))
+    setValidations((prev) => ({ ...prev, email: emailIsOk }))
+    setValidations((prev) => ({ ...prev, password: passwordIsOk }))
+    setValidations((prev) => ({ ...prev, samePassword: samePasswordIsOk }))
 
     if (!nameIsOk && !lastnameIsOk && !emailIsOk && !passwordIsOk && !samePasswordIsOk) {
       handleValidation('error', 'There are errors in one or more fields. Please review and correct them before continuing.')
-      return false
+      return null
     }
     if (!validations.terms) {
       handleValidation('error', 'You must accept the terms and conditions to continue.')
-      return false
+      return null
     }
+    const result = await requestRegister()
+    return result
+  }
+
+
+  const requestRegister = async (): Promise<string | null> => {
     try {
-      const response: AuthUserResponseInterface = await AuthService.registerUser(user)
-      console.log(response)
-      if (response.success) {
-        const { email, name, lastname, id } = response.data
-        // console.log('User registered successfully');
-        await AuthService.sendEmailCode(email, name, lastname, id)
-        return true
-      } else {
-        handleValidation('error', getErrorUtil(response.error as ServerErrorCode) || 'An error occurred.')
-        // console.error('Error ' + response.error + ': ' + response.message)
-        return false
+      setIsLoading(true)
+
+      const userBody = {
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+        password: user.password
       }
+
+      const response: AuthUserResponseInterface = await AuthService.registerUser(userBody)
+
+      if (!response.success) {
+        handleValidation('error', getErrorUtil(response.error as ServerErrorCode) || 'An error occurred.')
+        return null
+      }
+
+      const { id, name, lastname, email } = response.data
+      
+      await AuthService.sendEmailCode(email, name, lastname, id)
+      return id
+
     } catch (error) {
-      console.error('❌ Error de red o servidor:', error);
       handleValidation('error', 'A network error occurred. Please try again later.')
-      return false
-    }
-
-
+      return null
+    } 
   }
 
   return {
@@ -121,6 +132,7 @@ export const useRegisterViewModel = () => {
     setValidations,
     repeatPassword,
     handleValidate,
-    isLoading
+    isLoading,
+    setIsLoading
   };
 };

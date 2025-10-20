@@ -34,15 +34,18 @@ export const EmailVerifyScreen = () => {
     setTimecode,
     timecode,
     handleConfirm,
-    error
+    error,
+    isLoading,
+    setIsLoading
   } = useEmailVerifyViewModel()
 
   const handleButtonConfirm = async () => {
+    console.log(user)
     if (!user?.id) return
-    const result = await handleConfirm(user?.id)
-    if (result) {
-      navigation.navigate('MainBottomTab')
-    }
+    setIsLoading(true)
+    const result = await handleConfirm(user.id)
+    console.log(result)
+    setIsLoading(false)
   }
 
   return (
@@ -111,7 +114,7 @@ export const EmailVerifyScreen = () => {
             <CountdownTimer key={timecode} initialSeconds={timecode} onFinish={() => setTimecode(0)}/>
           )}
         </View>
-        <ButtonRegisterLogin title = 'Confirm' color = '#c8ff01' onPress = {handleButtonConfirm}/>
+        <ButtonRegisterLogin title = 'Confirm' color = '#c8ff01' isLoading={isLoading} onPress = {handleButtonConfirm}/>
         {error.success && (
           <Text style={styles.error}>
             {error.message}

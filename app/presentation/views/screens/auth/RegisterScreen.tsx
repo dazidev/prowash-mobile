@@ -31,13 +31,21 @@ const RegisterScreen = () => {
     validations,
     setValidations,
     handleValidate,
-    isLoading
+    isLoading,
+    setIsLoading
   } = useRegisterViewModel()
 
   const handleSuccessRegister = async () => {
-    const success = await handleRegister()
-    if (success === true) {
-      setUser(user)
+    const id = await handleRegister()
+    setIsLoading(false)
+    if (id) {
+      console.log(id)
+      setUser({
+        id,
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email
+      })
       navigation.navigate('EmailVerify')
     }
   }
@@ -127,7 +135,7 @@ const RegisterScreen = () => {
               </Text>
             )}
             <OrSeparator />
-            <ButtonRegisterLogin title='Log In' color='#b5d2ff' isLoading={isLoading} onPress={() => navigation.navigate('Login')} />
+            <ButtonRegisterLogin title='Log In' color='#b5d2ff' isLoading={false} onPress={() => navigation.navigate('Login')} />
           </>
         </View>
       </ScrollView>

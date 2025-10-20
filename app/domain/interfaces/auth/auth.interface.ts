@@ -6,9 +6,9 @@ export interface UserLoginResponseInterface {
   lastname: string
   email: string
   password?: string
-  contactNumber?: string
+  phoneNumber?: string
   isEmailVerified?: number
-  isPhoneVerified?: number
+  isPhoneMumberVerified?: number
   role?: string
   status?: string
 }

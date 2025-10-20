@@ -30,9 +30,7 @@ export class AuthService {
         "lastname": lastname,
         "userId": userId
       }
-      console.log(jsonEmail)
       const response = await api.post('/api/auth/register/verify-email', jsonEmail)
-      console.log(response.data)
       return response.data
     } catch (error: any) {
       console.log(error)
