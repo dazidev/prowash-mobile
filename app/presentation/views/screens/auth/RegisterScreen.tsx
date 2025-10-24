@@ -9,6 +9,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useRegisterViewModel } from '../../../viewmodels/auth/RegisterViewModel';
 import { AuthContext } from '../../../context/AuthContext';
+import { InputPass } from '../../components/auth/InputPass';
 
 type RootStackParamList = {
   Login: undefined
@@ -48,6 +49,14 @@ const RegisterScreen = () => {
       })
       navigation.navigate('EmailVerify')
     }
+  }
+
+  const handlePassword = (password: string) => {
+    handleValidate('password', password)
+  }
+
+  const handleRepeatPassword = (password: string) => {
+    handleValidate('samePassword', password)
   }
 
   return (
@@ -94,27 +103,13 @@ const RegisterScreen = () => {
               The email you entered is not valid.
             </Text>
           )}
-          <TextInput
-            placeholder="Password"
-            value={user.password}
-            onChangeText={(value) => { handleValidate('password', value) }}
-            secureTextEntry
-            style={styles.input}
-            placeholderTextColor="#999"
-          />
+          <InputPass password={user.password} placeholder='Password' setPassword={handlePassword}/>
           {!validations.password && (
             <Text style={styles.error}>
               The password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a symbol.
             </Text>
           )}
-          <TextInput
-            placeholder="Repeat password"
-            value={repeatPassword}
-            onChangeText={(value) => { handleValidate('samePassword', value) }}
-            secureTextEntry
-            style={styles.input}
-            placeholderTextColor="#999"
-          />
+          <InputPass password={repeatPassword} placeholder='Repeat password' setPassword={handleRepeatPassword}/>
           {!validations.samePassword && (
             <Text style={styles.error}>
               Your passwords don't match. Please enter your password again to confirm it.

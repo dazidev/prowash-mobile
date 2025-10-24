@@ -1,16 +1,20 @@
-import React, { useContext } from 'react';
-import { View, TextInput, TouchableOpacity, Text, ActivityIndicator, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
-import ButtonRegisterLogin from '../../components/ButtonRegisterLogin';
-import OrSeparator from '../../components/OrSeparator';
-import BackgroundBubbles from '../../components/BackgroundBubbles';
+import React from 'react';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { LoginViewModel } from '../../../viewmodels/auth/LoginViewModel';
 import { AuthContext } from '../../../context/AuthContext';
 import { RootStackParamList } from '../../../../domain/interfaces/navegation/navigation.interface';
 
+//* componentes
+import { InputPass } from '../../components/auth/InputPass';
+import ButtonRegisterLogin from '../../components/ButtonRegisterLogin';
+import OrSeparator from '../../components/OrSeparator';
+import BackgroundBubbles from '../../components/BackgroundBubbles';
+
 //* tipiado.
 import type { HandleLoginResponseInterface } from '../../../../domain';
+
 
 
 
@@ -42,6 +46,10 @@ const LoginScreen = () => {
     }
   }
 
+  const handlePassword = (password: string) => {
+    handleChange('password', password)
+  }
+
 
   return (
     <>
@@ -66,14 +74,7 @@ const LoginScreen = () => {
               The email you entered is not valid.
             </Text>
           )}
-          <TextInput
-            placeholder="Password"
-            value={credentials.password}
-            onChangeText={(value) => handleChange('password', value)}
-            secureTextEntry
-            style={styles.input}
-            placeholderTextColor="#999"
-          />
+          <InputPass password={credentials.password} placeholder='Password' setPassword={handlePassword}/>
           {!validations.password && (
             <Text style={styles.error}>
               The password must be at least 8 characters long.

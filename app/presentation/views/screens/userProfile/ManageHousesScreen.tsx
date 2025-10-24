@@ -104,7 +104,7 @@ export const ManageHousesScreen = () => {
                     state={item.state}
                     zipcode={item.zipcode}
                     houseId={item.id}
-                    imageUrl={item.image_url}
+                    imageUrl={item.imageUrl}
                     onDeleteHouse={() => handleDeleteHouse(item.id)}
                   />
                 )}

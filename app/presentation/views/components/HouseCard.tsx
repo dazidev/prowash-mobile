@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, TouchableOpacity } from "react-native"
 import { View } from "react-native"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import { colors } from "../../theme/colors"
+import { useMemo, useState } from "react"
 
 type Props = {
   name: string
@@ -16,26 +17,35 @@ type Props = {
 }
 
 
-const HouseCard = ({name, street, complementStreet, city, state, zipcode, imageUrl, houseId, onDeleteHouse}: Props) => {
+
+
+const HouseCard = ({ name, street, complementStreet, city, state, zipcode, imageUrl, houseId, onDeleteHouse }: Props) => {
+  const [useFallback, setUseFallback] = useState(false);
+
+  const primary = useMemo(
+    () => (imageUrl ? `https://images.prowash365.com/${imageUrl}` : null),
+    [imageUrl]
+  )
+  const fallback =
+    "https://imgix.cosentino.com/es/wp-content/uploads/2023/07/Lumire-70-Facade-MtWaverley-vic-1.jpg?auto=format%2Ccompress&ixlib=php-3.3.0";
+
+  const uri = useFallback || !primary ? fallback : primary;
 
   return (
     <View style={styles.cardContainer}>
       <View style={styles.imageContainer}>
-        <Image 
-          source={{
-            uri: imageUrl !== null
-              ? `https://images.prowash365.com/${imageUrl}` 
-              : 'https://imgix.cosentino.com/es/wp-content/uploads/2023/07/Lumire-70-Facade-MtWaverley-vic-1.jpg?auto=format%2Ccompress&ixlib=php-3.3.0'
-          }}
+        <Image
+          source={{ uri }}
+          onError={() => setUseFallback(true)}
           style={styles.image}
         />
         <View style={styles.iconsContainer}>
           {/*TODO: IMPLEMENTAR EL EDITAR LA CASA*/}
           <TouchableOpacity style={styles.icon}>
-            <Ionicons name={'create-outline'} size={28} color={'black'}/>
+            <Ionicons name={'create-outline'} size={28} color={'black'} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.icon} onPress={() => void onDeleteHouse()}>
-            <Ionicons name={'trash-outline'} size={28} color={'red'}/>
+            <Ionicons name={'trash-outline'} size={28} color={'red'} />
           </TouchableOpacity>
         </View>
       </View>

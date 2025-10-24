@@ -60,13 +60,15 @@ export const LoginViewModel = () => {
         }
         return { success: false }
       } else {
+        console.log('este es el usuario v')
+        console.log(response.data)
         await loginUser(response.data, response.tokens)
-        if (response.data.isEmailVerified === 0) {
+        if (response.data.isEmailVerified === false) {
           await AuthService.sendEmailCode(response.data.email, response.data.name, response.data.lastname, response.data.id)
         }
         return {
           success: true,
-          emailVerified: response.data.isEmailVerified === 1 ? true : false
+          emailVerified: response.data.isEmailVerified
         }
       }
     } catch (error) {

@@ -28,7 +28,7 @@ export interface UserHouseResponseItem {
   city: string
   state: string
   zipcode: string
-  image_url?: string
+  imageUrl?: string
 }
 
 export interface UserHousesResponse {

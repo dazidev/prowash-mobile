@@ -33,7 +33,6 @@ export class AuthService {
       const response = await api.post('/api/auth/register/verify-email', jsonEmail)
       return response.data
     } catch (error: any) {
-      console.log(error)
       if (axios.isAxiosError(error) && error.response) {
         return error.response.data
       }
@@ -68,12 +67,9 @@ export class AuthService {
         "userId": userId,
         "code": code
       }
-      console.log('hola')
       const response = await api.post('/api/auth/register/verify-email-code', jsonCode)
-      console.log(response)
       return response.data
     } catch (error: any) {
-      console.log(error)
       if (axios.isAxiosError(error) && error.response) {
         return error.response.data
       }
@@ -91,13 +87,11 @@ export class AuthService {
         "password": password
       }
       const response = await api.post('/api/auth/login/user', jsonLogin)
-      console.log(response)
       return response.data
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         return error.response.data
       }
-      console.log(error)
       return {
         success: false,
         error: 'NETWORK_ERROR',

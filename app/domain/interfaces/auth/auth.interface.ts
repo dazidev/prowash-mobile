@@ -7,8 +7,8 @@ export interface UserLoginResponseInterface {
   email: string
   password?: string
   phoneNumber?: string
-  isEmailVerified?: number
-  isPhoneMumberVerified?: number
+  isEmailVerified?: boolean
+  isPhoneMumberVerified?: boolean
   role?: string
   status?: string
 }
