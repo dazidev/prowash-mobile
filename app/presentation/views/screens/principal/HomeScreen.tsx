@@ -6,6 +6,7 @@ import { AdvImage } from "../../components/home/AdvImage"
 import { AdvCarousel } from "../../components/home/AdvCarousel"
 import { HomeScreenViewModel } from "../../../viewmodels/principal/HomeScreenViewModel"
 import { AdsResponse } from "../../../../domain"
+import { AdvVideo } from "../../components/home/AdvVideo"
 
 
 export const HomeScreen = () => {
@@ -50,9 +51,9 @@ export const HomeScreen = () => {
           ads.map((ad) => {
             switch (ad.type) {
               case "TEXT":
-                return <AdvText key={ad.id} text={ad.text!}/>;
+                return <AdvText key={ad.id} text={ad.text!}/>
               case "IMAGE":
-                return <AdvImage key={ad.id} text={ad.text!} image={ad.image1!}/>;
+                return <AdvImage key={ad.id} text={ad.text!} image={ad.image1!}/>
               case "IMAGE_CAROUSEL":
                 const images = {
                   image1: ad.image1,
@@ -61,7 +62,9 @@ export const HomeScreen = () => {
                   image4: ad.image4,
                   image5: ad.image5,
                 }
-                return <AdvCarousel key={ad.id} text={ad.text!} images={images}/>;
+                return <AdvCarousel key={ad.id} text={ad.text!} images={images}/>
+              case "VIDEO":
+                return <AdvVideo key={ad.id} text={ad.text!} video={ad.video!}/>
               default:
                 return null;
             }

@@ -1,14 +1,14 @@
 import { View, Text, StyleSheet, Image } from "react-native"
 import { colors } from "../../../theme/colors"
+import { VimeoWebView } from "../video/VimeoWebView"
 
 
 interface Props {
   text: string,
-  image: string
+  video: string
 }
 
-export const AdvImage = ({ text, image }: Props) => {
-  const uri = `https://images.prowash365.com/${image}`
+export const AdvVideo = ({ text, video }: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerPhoto}>
@@ -18,10 +18,7 @@ export const AdvImage = ({ text, image }: Props) => {
         <Text style={styles.textTitle}>Prowash 365</Text>
         <Text style={styles.text}>{text}</Text>
         <View style={styles.imageWrapper}>
-          <Image
-            source={{ uri }}
-            style={styles.image}
-          />
+          <VimeoWebView videoId={video}/>
         </View>
       </View>
     </View>
