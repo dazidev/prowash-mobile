@@ -7,7 +7,7 @@ export function CarouselComponent({ images }: { images: string[] }) {
   return (
     <Carousel
       width={width}
-      height={width * 2/3} // relación 3:2
+      height={(width * 2) / 3} // relación 3:2
       autoPlay
       data={images}
       scrollAnimationDuration={1000 * 2} // 2 segundos

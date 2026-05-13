@@ -1,28 +1,26 @@
-import { View, Text, StyleSheet, Image } from "react-native"
-import { colors } from "../../../theme/colors"
-import { CarouselComponent } from "../ common/Carousel"
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { colors } from '../../../theme/colors';
+import { CarouselComponent } from '../ common/Carousel';
 
 type ImageObj = {
-  image1: string | null
-  image2: string | null
-  image3: string | null
-  image4: string | null
-  image5: string | null
-}
+  image1: string | null;
+  image2: string | null;
+  image3: string | null;
+  image4: string | null;
+  image5: string | null;
+};
 
 interface Props {
-  text: string,
-  images: ImageObj
+  text: string;
+  images: ImageObj;
 }
 
 export const AdvCarousel = ({ text, images }: Props) => {
-  const uri =
-    Object.values(images ?? {})            //* si images es null retorna vacio {}
-      .filter((img): img is string => !!img) //* elimina null o undefined
-      .map((img, i) => {
-        return `https://images.prowash365.com/${img}`
-      });
-
+  const uri = Object.values(images ?? {}) //* si images es null retorna vacio {}
+    .filter((img): img is string => !!img) //* elimina null o undefined
+    .map((img, i) => {
+      return `https://images.prowash365.com/${img}`;
+    });
 
   return (
     <View style={styles.container}>
@@ -33,14 +31,12 @@ export const AdvCarousel = ({ text, images }: Props) => {
         <Text style={styles.textTitle}>Prowash 365</Text>
         <Text style={styles.text}>{text}</Text>
         <View style={styles.imageWrapper}>
-          <CarouselComponent
-            images={uri}
-          />
+          <CarouselComponent images={uri} />
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -78,9 +74,9 @@ const styles = StyleSheet.create({
   textTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    flexShrink: 1,      // permite encoger
-    flexWrap: 'wrap',   // hace wrap
-    width: '100%',      // asegura el ancho del contenedor
+    flexShrink: 1, // permite encoger
+    flexWrap: 'wrap', // hace wrap
+    width: '100%', // asegura el ancho del contenedor
   },
   text: {
     fontSize: 18,
@@ -92,11 +88,11 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderRadius: 12,
     overflow: 'hidden',
-    alignSelf: 'stretch'
+    alignSelf: 'stretch',
   },
   image: {
     width: '100%',
     aspectRatio: 3 / 2,
     resizeMode: 'cover',
-  }
-})
+  },
+});

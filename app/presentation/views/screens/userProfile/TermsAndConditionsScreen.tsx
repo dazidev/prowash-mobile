@@ -1,39 +1,46 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import CleaningBackground from "../../components/CleaningBackground"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import { colors } from "../../../theme/colors";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import CleaningBackground from '../../components/CleaningBackground';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../../theme/colors';
 
 //* tipiado.
-import type { ProfileStackParamList } from "../../../../domain";
+import type { ProfileStackParamList } from '../../../../domain';
 
-type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'TermsConditions'>;
-
+type NavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'TermsConditions'
+>;
 
 export const TermsAndConditionsScreen = () => {
-  const navigation = useNavigation<NavigationProp>()
-  
+  const navigation = useNavigation<NavigationProp>();
 
   return (
     <>
-      <CleaningBackground/>
+      <CleaningBackground />
       <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
-
 
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Terms and conditions</Text>
         </View>
 
-        <View style={styles.optionsContainer}>
-
-        </View>
+        <View style={styles.optionsContainer}></View>
       </ScrollView>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -76,4 +83,4 @@ const styles = StyleSheet.create({
     fontSize: 60,
     color: colors.principalBlue,
   },
-})
+});

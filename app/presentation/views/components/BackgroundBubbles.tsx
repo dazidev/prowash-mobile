@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  Easing,
-} from 'react-native';
+import { View, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,7 +11,13 @@ interface BubbleProps {
   duration: number;
 }
 
-const AnimatedBubble: React.FC<BubbleProps> = ({ size, left, top, delay, duration }) => {
+const AnimatedBubble: React.FC<BubbleProps> = ({
+  size,
+  left,
+  top,
+  delay,
+  duration,
+}) => {
   const translateY = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0)).current;
@@ -81,10 +81,7 @@ const AnimatedBubble: React.FC<BubbleProps> = ({ size, left, top, delay, duratio
           height: size,
           left,
           top,
-          transform: [
-            { translateY },
-            { scale },
-          ],
+          transform: [{ translateY }, { scale }],
           opacity,
         },
       ]}
@@ -107,9 +104,9 @@ const BackgroundBubbles: React.FC = () => {
     <View style={styles.container}>
       {/* Fondo con gradiente azul */}
       <View style={styles.backgroundGradient} />
-      
+
       {/* Burbujas animadas */}
-      {bubbles.map((bubble) => (
+      {bubbles.map(bubble => (
         <AnimatedBubble
           key={bubble.id}
           size={bubble.size}

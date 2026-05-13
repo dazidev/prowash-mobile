@@ -1,14 +1,13 @@
-import { View, Text, StyleSheet, Image } from "react-native"
-import { colors } from "../../../theme/colors"
-
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { colors } from '../../../theme/colors';
 
 interface Props {
-  text: string,
-  image: string
+  text: string;
+  image: string;
 }
 
 export const AdvImage = ({ text, image }: Props) => {
-  const uri = `https://images.prowash365.com/${image}`
+  const uri = `https://images.prowash365.com/${image}`;
   return (
     <View style={styles.container}>
       <View style={styles.containerPhoto}>
@@ -18,15 +17,12 @@ export const AdvImage = ({ text, image }: Props) => {
         <Text style={styles.textTitle}>Prowash 365</Text>
         <Text style={styles.text}>{text}</Text>
         <View style={styles.imageWrapper}>
-          <Image
-            source={{ uri }}
-            style={styles.image}
-          />
+          <Image source={{ uri }} style={styles.image} />
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -64,9 +60,9 @@ const styles = StyleSheet.create({
   textTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    flexShrink: 1,      // permite encoger
-    flexWrap: 'wrap',   // hace wrap
-    width: '100%',      // asegura el ancho del contenedor
+    flexShrink: 1, // permite encoger
+    flexWrap: 'wrap', // hace wrap
+    width: '100%', // asegura el ancho del contenedor
   },
   text: {
     fontSize: 18,
@@ -78,11 +74,11 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderRadius: 12,
     overflow: 'hidden',
-    alignSelf: 'stretch'
+    alignSelf: 'stretch',
   },
   image: {
     width: '100%',
     aspectRatio: 3 / 2,
     resizeMode: 'cover',
-  }
-})
+  },
+});

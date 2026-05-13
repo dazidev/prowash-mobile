@@ -1,5 +1,13 @@
 import React, { useContext } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import ButtonRegisterLogin from '../../components/ButtonRegisterLogin';
 import OrSeparator from '../../components/OrSeparator';
 import CheckBox from '../../components/CheckBox';
@@ -12,19 +20,19 @@ import { AuthContext } from '../../../context/AuthContext';
 import { InputPass } from '../../components/auth/InputPass';
 
 type RootStackParamList = {
-  Login: undefined
-  Register: undefined
-  EmailVerify: undefined
-}
+  Login: undefined;
+  Register: undefined;
+  EmailVerify: undefined;
+};
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Register'
->
+>;
 
 const RegisterScreen = () => {
-  const navigation = useNavigation<RegisterScreenNavigationProp>()
-  const { setUser } = useContext(AuthContext)
+  const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const { setUser } = useContext(AuthContext);
   const {
     user,
     handleRegister,
@@ -33,68 +41,75 @@ const RegisterScreen = () => {
     setValidations,
     handleValidate,
     isLoading,
-    setIsLoading
-  } = useRegisterViewModel()
+    setIsLoading,
+  } = useRegisterViewModel();
 
   const handleSuccessRegister = async () => {
-    const id = await handleRegister()
-    setIsLoading(false)
+    const id = await handleRegister();
+    setIsLoading(false);
     if (id) {
-      console.log(id)
+      console.log(id);
       setUser({
         id,
         name: user.name,
         lastname: user.lastname,
-        email: user.email
-      })
-      navigation.navigate('EmailVerify')
+        email: user.email,
+      });
+      navigation.navigate('EmailVerify');
     }
-  }
+  };
 
   const handlePassword = (password: string) => {
-    handleValidate('password', password)
-  }
+    handleValidate('password', password);
+  };
 
   const handleRepeatPassword = (password: string) => {
-    handleValidate('samePassword', password)
-  }
+    handleValidate('samePassword', password);
+  };
 
   return (
     <>
       <BackgroundBubbles />
       <ScrollView>
-
         <View style={styles.container}>
           <Text style={styles.title}>{'Create Account'}</Text>
           <Text style={styles.subtitle}>{'Fill your information below'}</Text>
           <TextInput
             placeholder="Name"
             value={user.name}
-            onChangeText={(value) => { handleValidate('name', value) }}
+            onChangeText={value => {
+              handleValidate('name', value);
+            }}
             style={styles.input}
             placeholderTextColor="#999"
           />
           {!validations.name && (
             <Text style={styles.error}>
-              Name must be 2 to 30 characters long and can only contain letters, spaces, hyphens, or apostrophes.
+              Name must be 2 to 30 characters long and can only contain letters,
+              spaces, hyphens, or apostrophes.
             </Text>
           )}
           <TextInput
             placeholder="Last Name"
             value={user.lastname}
-            onChangeText={(value) => { handleValidate('lastname', value) }}
+            onChangeText={value => {
+              handleValidate('lastname', value);
+            }}
             style={styles.input}
             placeholderTextColor="#999"
           />
           {!validations.lastname && (
             <Text style={styles.error}>
-              Last name must be 2 to 30 characters long and can only contain letters, spaces, hyphens, or apostrophes.
+              Last name must be 2 to 30 characters long and can only contain
+              letters, spaces, hyphens, or apostrophes.
             </Text>
           )}
           <TextInput
             placeholder="Email"
             value={user.email}
-            onChangeText={(value) => { handleValidate('email', value) }}
+            onChangeText={value => {
+              handleValidate('email', value);
+            }}
             style={styles.input}
             placeholderTextColor="#999"
           />
@@ -103,34 +118,66 @@ const RegisterScreen = () => {
               The email you entered is not valid.
             </Text>
           )}
-          <InputPass password={user.password} placeholder='Password' setPassword={handlePassword}/>
+          <InputPass
+            password={user.password}
+            placeholder="Password"
+            setPassword={handlePassword}
+          />
           {!validations.password && (
             <Text style={styles.error}>
-              The password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a symbol.
+              The password must be at least 8 characters long and include an
+              uppercase letter, a lowercase letter, a number, and a symbol.
             </Text>
           )}
-          <InputPass password={repeatPassword} placeholder='Repeat password' setPassword={handleRepeatPassword}/>
+          <InputPass
+            password={repeatPassword}
+            placeholder="Repeat password"
+            setPassword={handleRepeatPassword}
+          />
           {!validations.samePassword && (
             <Text style={styles.error}>
-              Your passwords don't match. Please enter your password again to confirm it.
+              Your passwords don't match. Please enter your password again to
+              confirm it.
             </Text>
           )}
           <View style={styles.row}>
-            <Text style={[styles.link, { marginRight: 4 }]}>{'I agree with'}</Text>
+            <Text style={[styles.link, { marginRight: 4 }]}>
+              {'I agree with'}
+            </Text>
             <TouchableOpacity>
-              <Text style={[styles.link, { color: '#c8ff01', textDecorationLine: 'underline' }]}>{'terms and conditions'}</Text>
+              <Text
+                style={[
+                  styles.link,
+                  { color: '#c8ff01', textDecorationLine: 'underline' },
+                ]}
+              >
+                {'terms and conditions'}
+              </Text>
             </TouchableOpacity>
-            <CheckBox checked={validations.terms} onChange={(value) => setValidations((prev) => ({ ...prev, terms: value }))} />
+            <CheckBox
+              checked={validations.terms}
+              onChange={value =>
+                setValidations(prev => ({ ...prev, terms: value }))
+              }
+            />
           </View>
           <>
-            <ButtonRegisterLogin title='Continue' color='#c8ff01' isLoading={isLoading} onPress={handleSuccessRegister} />
+            <ButtonRegisterLogin
+              title="Continue"
+              color="#c8ff01"
+              isLoading={isLoading}
+              onPress={handleSuccessRegister}
+            />
             {validations.error != '' && (
-              <Text style={styles.error}>
-                {validations.error}
-              </Text>
+              <Text style={styles.error}>{validations.error}</Text>
             )}
             <OrSeparator />
-            <ButtonRegisterLogin title='Log In' color='#b5d2ff' isLoading={false} onPress={() => navigation.navigate('Login')} />
+            <ButtonRegisterLogin
+              title="Log In"
+              color="#b5d2ff"
+              isLoading={false}
+              onPress={() => navigation.navigate('Login')}
+            />
           </>
         </View>
       </ScrollView>
@@ -193,6 +240,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'flex-end'
-  }
+    justifyContent: 'flex-end',
+  },
 });

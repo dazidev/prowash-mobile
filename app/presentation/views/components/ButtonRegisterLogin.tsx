@@ -1,18 +1,22 @@
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 
 type Props = {
   title: string;
   color: string;
   onPress: () => void;
-  isLoading: boolean
-}
+  isLoading: boolean;
+};
 
 const ButtonRegisterLogin = ({ title, color, onPress, isLoading }: Props) => {
-
   const handlePress = () => {
-    if (isLoading) return
-    onPress()
-  }
+    if (isLoading) return;
+    onPress();
+  };
 
   return (
     <TouchableOpacity
@@ -20,14 +24,14 @@ const ButtonRegisterLogin = ({ title, color, onPress, isLoading }: Props) => {
       disabled={isLoading}
       onPress={handlePress}
     >
-      {
-        isLoading === false
-          ? (<Text style={styles.buttonText}>{title} </Text>)
-          : (<ActivityIndicator color={'black'} />)
-      }
+      {isLoading === false ? (
+        <Text style={styles.buttonText}>{title} </Text>
+      ) : (
+        <ActivityIndicator color={'black'} />
+      )}
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   button: {
@@ -40,7 +44,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 24,
     fontWeight: 'bold',
-  }
-})
+  },
+});
 
-export default ButtonRegisterLogin
+export default ButtonRegisterLogin;

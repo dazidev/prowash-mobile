@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react"
-import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native"
-import { AdvText } from "../../components/home/AdvText"
-import CleaningBackground from "../../components/CleaningBackground"
-import { AdvImage } from "../../components/home/AdvImage"
-import { AdvCarousel } from "../../components/home/AdvCarousel"
-import { HomeScreenViewModel } from "../../../viewmodels/principal/HomeScreenViewModel"
-import { AdsResponse } from "../../../../domain"
-import { AdvVideo } from "../../components/home/AdvVideo"
-
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { AdvText } from '../../components/home/AdvText';
+import CleaningBackground from '../../components/CleaningBackground';
+import { AdvImage } from '../../components/home/AdvImage';
+import { AdvCarousel } from '../../components/home/AdvCarousel';
+import { HomeScreenViewModel } from '../../../viewmodels/principal/HomeScreenViewModel';
+import { AdsResponse } from '../../../../domain';
+import { AdvVideo } from '../../components/home/AdvVideo';
 
 export const HomeScreen = () => {
-  const { getAdvertising } = HomeScreenViewModel()
+  const { getAdvertising } = HomeScreenViewModel();
   const [data, setData] = useState<AdsResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,12 +26,14 @@ export const HomeScreen = () => {
       }
     };
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: "center" }]}>
+      <View style={[styles.container, { justifyContent: 'center' }]}>
         <ActivityIndicator />
       </View>
     );
@@ -47,40 +48,42 @@ export const HomeScreen = () => {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        {
-          ads.map((ad) => {
-            switch (ad.type) {
-              case "TEXT":
-                return <AdvText key={ad.id} text={ad.text!}/>
-              case "IMAGE":
-                return <AdvImage key={ad.id} text={ad.text!} image={ad.image1!}/>
-              case "IMAGE_CAROUSEL":
-                const images = {
-                  image1: ad.image1,
-                  image2: ad.image2,
-                  image3: ad.image3,
-                  image4: ad.image4,
-                  image5: ad.image5,
-                }
-                return <AdvCarousel key={ad.id} text={ad.text!} images={images}/>
-              case "VIDEO":
-                return <AdvVideo key={ad.id} text={ad.text!} video={ad.video!}/>
-              default:
-                return null;
-            }
-          })
-        }
+        {ads.map(ad => {
+          switch (ad.type) {
+            case 'TEXT':
+              return <AdvText key={ad.id} text={ad.text!} />;
+            case 'IMAGE':
+              return (
+                <AdvImage key={ad.id} text={ad.text!} image={ad.image1!} />
+              );
+            case 'IMAGE_CAROUSEL':
+              const images = {
+                image1: ad.image1,
+                image2: ad.image2,
+                image3: ad.image3,
+                image4: ad.image4,
+                image5: ad.image5,
+              };
+              return (
+                <AdvCarousel key={ad.id} text={ad.text!} images={images} />
+              );
+            case 'VIDEO':
+              return <AdvVideo key={ad.id} text={ad.text!} video={ad.video!} />;
+            default:
+              return null;
+          }
+        })}
       </ScrollView>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
     paddingVertical: 60,
-    alignContent: 'center'
+    alignContent: 'center',
   },
   title: {
     display: 'flex',
@@ -88,6 +91,5 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: 'black',
     textAlign: 'center',
-  }
-})
-
+  },
+});

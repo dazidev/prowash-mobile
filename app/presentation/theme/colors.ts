@@ -1,5 +1,3 @@
-
-
 export const colors = {
   principalGreen: '#c8ff01',
   principalBlue: '#0D47A1',
@@ -11,5 +9,5 @@ export const colors = {
   bgInactive: '#efefef',
   itemInactive: '#a8a6a6',
   inputGray: '#c4c4c4',
-  darkGreen: '#A4D100'
-}
+  darkGreen: '#A4D100',
+};

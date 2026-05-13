@@ -1,69 +1,83 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { HomeScreen } from "../views/screens/principal/HomeScreen";
-import { UserProfileScreen } from "../views/screens/principal/UserProfileScreen";
-import { FlexAlignType, StyleSheet, View } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { EditProfileScreen } from "../views/screens/userProfile/EditProfileScreen";
-import { ChangeEmailAddressScreen } from "../views/screens/userProfile/ChangeEmailAddressScreen";
-import { ChangePasswordScreen } from "../views/screens/userProfile/ChangePasswordScreen";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import { TermsAndConditionsScreen } from "../views/screens/userProfile/TermsAndConditionsScreen";
-import { ManageHousesScreen } from "../views/screens/userProfile/ManageHousesScreen";
-import AddHouseScreen from "../views/screens/userProfile/AddHouseScreen";
-import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import { ServicesScreen } from "../views/screens/principal/ServicesScreen";
+import { HomeScreen } from '../views/screens/principal/HomeScreen';
+import { UserProfileScreen } from '../views/screens/principal/UserProfileScreen';
+import { FlexAlignType, StyleSheet, View } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { EditProfileScreen } from '../views/screens/userProfile/EditProfileScreen';
+import { ChangeEmailAddressScreen } from '../views/screens/userProfile/ChangeEmailAddressScreen';
+import { ChangePasswordScreen } from '../views/screens/userProfile/ChangePasswordScreen';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { TermsAndConditionsScreen } from '../views/screens/userProfile/TermsAndConditionsScreen';
+import { ManageHousesScreen } from '../views/screens/userProfile/ManageHousesScreen';
+import AddHouseScreen from '../views/screens/userProfile/AddHouseScreen';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { ServicesScreen } from '../views/screens/principal/ServicesScreen';
 
 //* tipiados
-import type { AppParamList, HomeStackParamList, ProfileStackParamList, ServicesStackParamList } from "../../domain";
+import type {
+  AppParamList,
+  HomeStackParamList,
+  ProfileStackParamList,
+  ServicesStackParamList,
+} from '../../domain';
 
-const Tab = createBottomTabNavigator<AppParamList>()
-const Home = createNativeStackNavigator<HomeStackParamList>()
-const Services = createNativeStackNavigator<ServicesStackParamList>()
-const Profile = createNativeStackNavigator<ProfileStackParamList>()
+const Tab = createBottomTabNavigator<AppParamList>();
+const Home = createNativeStackNavigator<HomeStackParamList>();
+const Services = createNativeStackNavigator<ServicesStackParamList>();
+const Profile = createNativeStackNavigator<ProfileStackParamList>();
 
 const HomeNavigator = () => {
   return (
     <Home.Navigator screenOptions={{ headerShown: false }}>
-      <Home.Screen name="Home" component={HomeScreen}/>
+      <Home.Screen name="Home" component={HomeScreen} />
     </Home.Navigator>
-  )
-}
+  );
+};
 
 const ServicesNavigator = () => {
   return (
     <Services.Navigator screenOptions={{ headerShown: false }}>
-      <Services.Screen name="Services" component={ServicesScreen}/>
+      <Services.Screen name="Services" component={ServicesScreen} />
     </Services.Navigator>
-  )
-}
+  );
+};
 
 const ProfileNavigator = () => {
   return (
     <ActionSheetProvider>
       <Profile.Navigator screenOptions={{ headerShown: false }}>
-        <Profile.Screen name="ProfileHome" component={UserProfileScreen}/>
-        <Profile.Screen name="EditProfile" component={EditProfileScreen}/>
-        <Profile.Screen name="ChangeEmail" component={ChangeEmailAddressScreen}/>
+        <Profile.Screen name="ProfileHome" component={UserProfileScreen} />
+        <Profile.Screen name="EditProfile" component={EditProfileScreen} />
+        <Profile.Screen
+          name="ChangeEmail"
+          component={ChangeEmailAddressScreen}
+        />
 
-        <Profile.Screen name="ChangePassword" component={ChangePasswordScreen}/>
-        <Profile.Screen name="TermsConditions" component={TermsAndConditionsScreen}/>
-        <Profile.Screen name="ManageHouses" component={ManageHousesScreen}/>
-        <Profile.Screen name="AddHouse" component={AddHouseScreen}/>
+        <Profile.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
+        />
+        <Profile.Screen
+          name="TermsConditions"
+          component={TermsAndConditionsScreen}
+        />
+        <Profile.Screen name="ManageHouses" component={ManageHousesScreen} />
+        <Profile.Screen name="AddHouse" component={AddHouseScreen} />
       </Profile.Navigator>
     </ActionSheetProvider>
-  )
-}
+  );
+};
 
 const AppTabNavigator = () => (
   <Tab.Navigator
-    screenOptions = {({ route }) => {
+    screenOptions={({ route }) => {
       const alignMap = {
-        HomeTab: "flex-start",
-        ProfileTab: "center",
-        ServicesTab: "flex-end",
-      }
-      const align = alignMap[route.name as keyof typeof alignMap] ?? "center"
+        HomeTab: 'flex-start',
+        ProfileTab: 'center',
+        ServicesTab: 'flex-end',
+      };
+      const align = alignMap[route.name as keyof typeof alignMap] ?? 'center';
 
       return {
         headerShown: false,
@@ -74,57 +88,63 @@ const AppTabNavigator = () => (
         tabBarItemStyle: {
           paddingTop: 16,
           paddingHorizontal: 15,
-          alignItems: align as FlexAlignType
+          alignItems: align as FlexAlignType,
         },
         tabBarIcon: ({ focused, color }) => {
           const map: Record<string, [string, string]> = {
-            HomeTab: ["home-outline", "home"],
-            ProfileTab: ["person-outline", "person"],
-            ServicesTab: ["bar-chart-outline", "bar-chart"],
-          }
+            HomeTab: ['home-outline', 'home'],
+            ProfileTab: ['person-outline', 'person'],
+            ServicesTab: ['bar-chart-outline', 'bar-chart'],
+          };
           const [inactive, active] = map[route.name] ?? [
-            "help-circle-outline",
-            "help-circle",
-          ]
+            'help-circle-outline',
+            'help-circle',
+          ];
           const name = focused ? active : inactive;
-  
+
           return (
             <View
               style={{
                 width: 60,
                 height: 60,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: focused ? '#ffffff': '',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: focused ? '#ffffff' : '',
                 borderRadius: 60,
               }}
             >
               <Ionicons name={name} size={focused ? 36 : 32} color={color} />
             </View>
-          )
+          );
         },
-      }
+      };
     }}
   >
     <Tab.Screen name="HomeTab" component={HomeNavigator} />
-    <Tab.Screen 
+    <Tab.Screen
       name="ProfileTab"
       component={ProfileNavigator}
       options={({ route }) => {
-        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-        const hideOnRoutes = ["EditProfile", "ChangePassword", "TermsConditions", "ManageHouses", "AddHouse"]
+        const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+        const hideOnRoutes = [
+          'EditProfile',
+          'ChangePassword',
+          'TermsConditions',
+          'ManageHouses',
+          'AddHouse',
+        ];
         return {
           tabBarStyle: hideOnRoutes.includes(routeName)
-            ? { display: "none" }
-            : styles.tabBar
-        } 
-      }} 
+            ? { display: 'none' }
+            : styles.tabBar,
+        };
+      }}
     />
     <Tab.Screen name="ServicesTab" component={ServicesNavigator} />
   </Tab.Navigator>
-)
+);
 
-export default AppTabNavigator
+export default AppTabNavigator;
 
 const styles = StyleSheet.create({
   tabBar: {
@@ -142,6 +162,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
-    elevation: 8  
-  }
-})
+    elevation: 8,
+  },
+});

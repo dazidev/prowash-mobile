@@ -1,43 +1,57 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useNavigation } from "@react-navigation/native"
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import CleaningBackground from "../../components/CleaningBackground";
-import { InputCustom } from "../../components/InputCustom";
-import { EditProfileViewModel } from "../../../viewmodels/userProfile/EditProfileViewModel";
-import { ButtomCustom } from "../../components/ButtomCustom";
-import { NotificationCustom } from "../../components/NotificationCustom";
-import TopNotification, { TopNotificationHandle } from "../../components/overlays/TopNotification";
-import { useRef } from "react";
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import CleaningBackground from '../../components/CleaningBackground';
+import { InputCustom } from '../../components/InputCustom';
+import { EditProfileViewModel } from '../../../viewmodels/userProfile/EditProfileViewModel';
+import { ButtomCustom } from '../../components/ButtomCustom';
+import { NotificationCustom } from '../../components/NotificationCustom';
+import TopNotification, {
+  TopNotificationHandle,
+} from '../../components/overlays/TopNotification';
+import { useRef } from 'react';
 
 //* tipiado.
-import { ProfileStackParamList } from "../../../../domain";
+import { ProfileStackParamList } from '../../../../domain';
 
-
-type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'EditProfile'>;
+type NavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'EditProfile'
+>;
 
 export const EditProfileScreen = () => {
-  const navigation = useNavigation<NavigationProp>()
-  const { 
+  const navigation = useNavigation<NavigationProp>();
+  const {
     fieldValue,
     setFieldValue,
     error,
     validateText,
     changes,
-    saveChanges
-  } = EditProfileViewModel()
+    saveChanges,
+  } = EditProfileViewModel();
   const notifRef = useRef<TopNotificationHandle>(null);
 
   const onSave = () => {
     // TODO: EL NOTIFREF NO PUEDE IR ACA, MANEJAR LOS ERRORES.
     notifRef.current?.show('Changes saved successfully', 'success');
-    saveChanges()
-  }
+    saveChanges();
+  };
 
   return (
     <>
-      <CleaningBackground/>
+      <CleaningBackground />
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
 
@@ -47,49 +61,58 @@ export const EditProfileScreen = () => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>My personal information</Text>
           </View>
-          
+
           <View style={styles.containerOptions}>
-            <InputCustom 
+            <InputCustom
               title={'First name*'}
               value={fieldValue.name}
-              onChangeText={ (text) => validateText(text, "name") }
+              onChangeText={text => validateText(text, 'name')}
               error={error.name}
             />
             <InputCustom
               title={'Last name*'}
               value={fieldValue.lastname}
-              onChangeText={ (text) => validateText(text, "lastname") }
+              onChangeText={text => validateText(text, 'lastname')}
               error={error.lastname}
             />
-            <InputCustom 
+            <InputCustom
               title={'Email*'}
               value={fieldValue.email}
-              onChangeText={ (text) => setFieldValue((prev) => ({...prev, email: text}))}
+              onChangeText={text =>
+                setFieldValue(prev => ({ ...prev, email: text }))
+              }
               block={true}
               successMessage="Email successfully verified"
             />
-            { fieldValue.phoneNumber && (
-                <InputCustom 
-                  title={'Phone number'}
-                  value={fieldValue.phoneNumber}
-                  onChangeText={ (text) => setFieldValue((prev) => ({...prev, phoneNumber: text}))}
-                />
-              )
-            }
-            { !fieldValue.phoneNumber && (
-                <ButtomCustom
-                  title="Add phone number"
-                  colorTitle="#11bf22"
-                />
-              )
-            }
-            
-            <TouchableOpacity 
-              onPress={onSave} 
-              style={[styles.saveButton, {backgroundColor: changes ? '#c8ff01' : '#efefef'}]}
+            {fieldValue.phoneNumber && (
+              <InputCustom
+                title={'Phone number'}
+                value={fieldValue.phoneNumber}
+                onChangeText={text =>
+                  setFieldValue(prev => ({ ...prev, phoneNumber: text }))
+                }
+              />
+            )}
+            {!fieldValue.phoneNumber && (
+              <ButtomCustom title="Add phone number" colorTitle="#11bf22" />
+            )}
+
+            <TouchableOpacity
+              onPress={onSave}
+              style={[
+                styles.saveButton,
+                { backgroundColor: changes ? '#c8ff01' : '#efefef' },
+              ]}
               disabled={!changes}
             >
-              <Text style={[styles.saveText, {color: changes ? 'black' : '#a8a6a6'}]}>Save</Text>
+              <Text
+                style={[
+                  styles.saveText,
+                  { color: changes ? 'black' : '#a8a6a6' },
+                ]}
+              >
+                Save
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -107,25 +130,18 @@ export const EditProfileScreen = () => {
               title="Change email"
               colorTitle="black"
             />*/}
-            { !fieldValue.phoneNumber && ( //cambiar cuando ya este funcionando lo del número
-                <ButtomCustom
-                  title="Change phone number"
-                  colorTitle="black"
-                />
-              )
-            }
-            <ButtomCustom
-              title="Delete account"
-              colorTitle="red"
-            />
+            {!fieldValue.phoneNumber && ( //cambiar cuando ya este funcionando lo del número
+              <ButtomCustom title="Change phone number" colorTitle="black" />
+            )}
+            <ButtomCustom title="Delete account" colorTitle="red" />
           </View>
         </ScrollView>
       </View>
     </>
-  )
-}
+  );
+};
 
-const { width, height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -195,7 +211,7 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
   error: {
     color: '#D9363E',

@@ -1,22 +1,25 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import CleaningBackground from "../../components/CleaningBackground"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import { InputCustom } from "../../components/InputCustom";
-import ChangePasswordViewModel from "../../../viewmodels/userProfile/ChangePasswordViewModel";
-import { useRef } from "react";
-import TopNotification, { TopNotificationHandle } from "../../components/overlays/TopNotification";
-import { colors } from "../../../theme/colors";
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import CleaningBackground from '../../components/CleaningBackground';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { InputCustom } from '../../components/InputCustom';
+import ChangePasswordViewModel from '../../../viewmodels/userProfile/ChangePasswordViewModel';
+import { useRef } from 'react';
+import TopNotification, {
+  TopNotificationHandle,
+} from '../../components/overlays/TopNotification';
+import { colors } from '../../../theme/colors';
 
 //* tipiado.
-import type { ProfileStackParamList } from "../../../../domain";
+import type { ProfileStackParamList } from '../../../../domain';
 
-
-type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ChangePassword'>;
-
+type NavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'ChangePassword'
+>;
 
 export const ChangePasswordScreen = () => {
-  const navigation = useNavigation<NavigationProp>()
+  const navigation = useNavigation<NavigationProp>();
   const {
     fieldValue,
     fieldError,
@@ -24,23 +27,27 @@ export const ChangePasswordScreen = () => {
     verifiedFormatPassword,
     changes,
     saveChanges,
-    setChanges
-  } = ChangePasswordViewModel()
+    setChanges,
+  } = ChangePasswordViewModel();
   const notifRef = useRef<TopNotificationHandle>(null);
 
   const onSave = async () => {
-    const result = await saveChanges()
-    if (!result.success) return notifRef.current?.show(result.message!, 'error');
-      
+    const result = await saveChanges();
+    if (!result.success)
+      return notifRef.current?.show(result.message!, 'error');
+
     notifRef.current?.show('Changes saved successfully', 'success');
-    setChanges(false)
-  }
+    setChanges(false);
+  };
 
   return (
     <>
-      <CleaningBackground/>
+      <CleaningBackground />
       <View style={styles.conainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
 
@@ -51,47 +58,68 @@ export const ChangePasswordScreen = () => {
         </View>
 
         <View style={styles.optionsContainer}>
-
           <InputCustom
             title="Current password*"
             value={fieldValue.password}
-            onChangeText={(value) =>  validateField(value, "password")}
+            onChangeText={value => validateField(value, 'password')}
             password={true}
             error={fieldError.password}
-            onBlur={() => verifiedFormatPassword(fieldValue.password, 'password')}
+            onBlur={() =>
+              verifiedFormatPassword(fieldValue.password, 'password')
+            }
           />
 
           <InputCustom
             title="New password*"
             value={fieldValue.newPassword}
-            onChangeText={(value) =>  validateField(value, "newPassword")}
+            onChangeText={value => validateField(value, 'newPassword')}
             password={true}
             error={fieldError.newPassword}
-            onBlur={() => verifiedFormatPassword(fieldValue.newPassword, 'newPassword')}
+            onBlur={() =>
+              verifiedFormatPassword(fieldValue.newPassword, 'newPassword')
+            }
           />
 
           <InputCustom
             title="Repeat new password*"
             value={fieldValue.repeatNewPassword}
-            onChangeText={(value) =>  validateField(value, 'repeatNewPassword')}
+            onChangeText={value => validateField(value, 'repeatNewPassword')}
             password={true}
             error={fieldError.repeatNewPassword}
-            onBlur={() => verifiedFormatPassword(fieldValue.repeatNewPassword, 'repeatNewPassword')}
+            onBlur={() =>
+              verifiedFormatPassword(
+                fieldValue.repeatNewPassword,
+                'repeatNewPassword',
+              )
+            }
           />
 
-          <TouchableOpacity 
-            onPress={onSave} 
-            style={[styles.saveButton, {backgroundColor: changes ? colors.principalGreen : colors.bgInactive}]}
+          <TouchableOpacity
+            onPress={onSave}
+            style={[
+              styles.saveButton,
+              {
+                backgroundColor: changes
+                  ? colors.principalGreen
+                  : colors.bgInactive,
+              },
+            ]}
             disabled={!changes}
           >
-            <Text style={[styles.saveText, {color: changes ? 'black' : colors.itemInactive}]}>Save</Text>
+            <Text
+              style={[
+                styles.saveText,
+                { color: changes ? 'black' : colors.itemInactive },
+              ]}
+            >
+              Save
+            </Text>
           </TouchableOpacity>
-
         </View>
       </View>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   conainer: {
@@ -146,6 +174,6 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
-})
+});

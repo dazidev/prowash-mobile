@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet } from "react-native"
-import { colors } from "../../../theme/colors"
+import { View, Text, StyleSheet } from 'react-native';
+import { colors } from '../../../theme/colors';
 
 interface Props {
-  text: string
+  text: string;
 }
 
 export const AdvText = ({ text }: Props) => {
@@ -16,8 +16,8 @@ export const AdvText = ({ text }: Props) => {
         <Text style={styles.text}>{text}</Text>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -55,9 +55,9 @@ const styles = StyleSheet.create({
   textTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    flexShrink: 1,      // permite encoger
-    flexWrap: 'wrap',   // hace wrap
-    width: '100%',      // asegura el ancho del contenedor
+    flexShrink: 1, // permite encoger
+    flexWrap: 'wrap', // hace wrap
+    width: '100%', // asegura el ancho del contenedor
   },
   text: {
     fontSize: 18,
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     width: '100%',
   },
-})
+});

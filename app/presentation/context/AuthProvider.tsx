@@ -1,10 +1,12 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react'
-import { AuthContext } from './AuthContext'
-
-
+import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { AuthContext } from './AuthContext';
 
 //* tipiado.
-import type { AuthStatus, AuthTokensInterface, UserLoginResponseInterface } from '../../domain'
+import type {
+  AuthStatus,
+  AuthTokensInterface,
+  UserLoginResponseInterface,
+} from '../../domain';
 
 //import { AuthService } from '../services/AuthService'
 //import { useNavigation } from '@react-navigation/native'
@@ -12,14 +14,17 @@ import type { AuthStatus, AuthTokensInterface, UserLoginResponseInterface } from
 //import { RootStackParamList } from '../interfaces/NavigationModel'
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
-
-  const [status, setStatus] = useState<AuthStatus>('unauthenticated')
-  const [tokens, setTokens] = useState<AuthTokensInterface | undefined>(undefined)
-  const [user, setUser] = useState< UserLoginResponseInterface | undefined>(undefined)
+  const [status, setStatus] = useState<AuthStatus>('unauthenticated');
+  const [tokens, setTokens] = useState<AuthTokensInterface | undefined>(
+    undefined,
+  );
+  const [user, setUser] = useState<UserLoginResponseInterface | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     //AuthService.checkStatus()
-  }, [])
+  }, []);
 
   /*useEffect(() => {
     if (status !== 'checking'){
@@ -50,11 +55,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     >
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
-export default AuthProvider
-
-
-
-
+export default AuthProvider;

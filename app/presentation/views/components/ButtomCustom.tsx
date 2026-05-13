@@ -1,18 +1,22 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {
-  title: string,
-  colorTitle: string,
-  onPress?: () => void
-}
+  title: string;
+  colorTitle: string;
+  onPress?: () => void;
+};
 
-export const ButtomCustom: React.FC<Props>  = ({ title, colorTitle, onPress }: Props) => {
+export const ButtomCustom: React.FC<Props> = ({
+  title,
+  colorTitle,
+  onPress,
+}: Props) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.customButton}>
-      <Text style={[styles.text, {color: colorTitle}]}>{title}</Text>
+      <Text style={[styles.text, { color: colorTitle }]}>{title}</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   customButton: {
@@ -28,4 +32,4 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
   },
-})
+});

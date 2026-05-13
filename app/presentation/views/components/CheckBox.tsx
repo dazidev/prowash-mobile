@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 
 interface Props {
-  checked: boolean
+  checked: boolean;
   onChange: (newValue: boolean) => void;
 }
 
-const CustomCheckBox: React.FC<Props> = ({checked, onChange}) => {
+const CustomCheckBox: React.FC<Props> = ({ checked, onChange }) => {
   return (
-    <Pressable style={styles.checkboxContainer} onPress={() => onChange(!checked)}>
+    <Pressable
+      style={styles.checkboxContainer}
+      onPress={() => onChange(!checked)}
+    >
       <View style={[styles.checkbox, checked && styles.checked]} />
     </Pressable>
   );
@@ -38,5 +41,3 @@ const styles = StyleSheet.create({
 });
 
 export default CustomCheckBox;
-
-

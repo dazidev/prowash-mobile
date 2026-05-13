@@ -1,5 +1,14 @@
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { LoginViewModel } from '../../../viewmodels/auth/LoginViewModel';
@@ -14,10 +23,6 @@ import BackgroundBubbles from '../../components/BackgroundBubbles';
 
 //* tipiado.
 import type { HandleLoginResponseInterface } from '../../../../domain';
-
-
-
-
 
 // TODO: POSTING y LOWERCASE
 
@@ -34,22 +39,24 @@ const LoginScreen = () => {
     error,
     validations,
     handleLogin,
-    isLoading
+    isLoading,
   } = LoginViewModel();
 
   const handleButtonLogin = async () => {
-    const result: HandleLoginResponseInterface = await handleLogin(credentials.email, credentials.password)
+    const result: HandleLoginResponseInterface = await handleLogin(
+      credentials.email,
+      credentials.password,
+    );
     if (result.success) {
       if (!result.emailVerified) {
-        navigation.navigate('EmailVerify')
+        navigation.navigate('EmailVerify');
       }
     }
-  }
+  };
 
   const handlePassword = (password: string) => {
-    handleChange('password', password)
-  }
-
+    handleChange('password', password);
+  };
 
   return (
     <>
@@ -59,13 +66,12 @@ const LoginScreen = () => {
           <Image
             source={require('../../../../../assets/loginLogo.png')}
             style={styles.image}
-            resizeMode='contain'
+            resizeMode="contain"
           />
           <TextInput
             placeholder="Email"
             value={credentials.email}
-            onChangeText={(value) => handleChange('email', value)}
-
+            onChangeText={value => handleChange('email', value)}
             style={styles.input}
             placeholderTextColor="#999"
           />
@@ -74,7 +80,11 @@ const LoginScreen = () => {
               The email you entered is not valid.
             </Text>
           )}
-          <InputPass password={credentials.password} placeholder='Password' setPassword={handlePassword}/>
+          <InputPass
+            password={credentials.password}
+            placeholder="Password"
+            setPassword={handlePassword}
+          />
           {!validations.password && (
             <Text style={styles.error}>
               The password must be at least 8 characters long.
@@ -83,14 +93,20 @@ const LoginScreen = () => {
           <TouchableOpacity>
             <Text style={styles.link}>{'Forgot Password?'}</Text>
           </TouchableOpacity>
-          <ButtonRegisterLogin title='Log In' color='#c8ff01' isLoading={isLoading} onPress={handleButtonLogin} />
-          {!error.success && (
-            <Text style={styles.error}>
-              {error.message}
-            </Text>
-          )}
+          <ButtonRegisterLogin
+            title="Log In"
+            color="#c8ff01"
+            isLoading={isLoading}
+            onPress={handleButtonLogin}
+          />
+          {!error.success && <Text style={styles.error}>{error.message}</Text>}
           <OrSeparator />
-          <ButtonRegisterLogin title='Create an Account' color='#b5d2ff' isLoading={false} onPress={() => navigation.navigate('Register')} />
+          <ButtonRegisterLogin
+            title="Create an Account"
+            color="#b5d2ff"
+            isLoading={false}
+            onPress={() => navigation.navigate('Register')}
+          />
         </View>
       </ScrollView>
     </>
@@ -140,5 +156,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 16,
     marginBottom: 20,
-  }
+  },
 });

@@ -1,27 +1,21 @@
-import { useContext, useState } from "react";
-import { Alert } from "react-native";
-import { AuthContext } from "../../context/AuthContext";
-
-
+import { useContext, useState } from 'react';
+import { Alert } from 'react-native';
+import { AuthContext } from '../../context/AuthContext';
 
 export const UserProfileViewModel = () => {
-
   const [alert, setAlert] = useState();
-  const { setStatus, setTokens, setUser } = useContext(AuthContext)
+  const { setStatus, setTokens, setUser } = useContext(AuthContext);
 
   const handleOptions = (option: number) => {
     switch (option) {
       case 1:
-        return "EditProfile"
+        return 'EditProfile';
       case 3:
-        return "ManageHouses"
+        return 'ManageHouses';
       case 4:
-        return "TermsConditions"
+        return 'TermsConditions';
       case 5:
-        Alert.alert(
-         "Confirm logout",
-         "Are you sure you want to log out?",
-         [
+        Alert.alert('Confirm logout', 'Are you sure you want to log out?', [
           {
             text: 'Cancel',
             onPress: () => {},
@@ -29,21 +23,20 @@ export const UserProfileViewModel = () => {
           {
             text: 'Logout',
             onPress: () => {
-              setStatus('unauthenticated')
-              setUser(undefined)
-              setTokens(undefined)
+              setStatus('unauthenticated');
+              setUser(undefined);
+              setTokens(undefined);
             },
-          }
-         ]
-        )
+          },
+        ]);
         break;
-    
+
       default:
         break;
     }
-  }
+  };
 
   return {
-    handleOptions
-  }
-}
+    handleOptions,
+  };
+};

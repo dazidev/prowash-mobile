@@ -1,68 +1,85 @@
-import { Alert, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import CleaningBackground from "../../components/CleaningBackground"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import HouseCard from "../../components/HouseCard";
-import ManageHousesViewModel from "../../../viewmodels/userProfile/ManageHousesViewModel";
-import { useEffect, useRef } from "react";
-import TopNotification, { TopNotificationHandle } from "../../components/overlays/TopNotification";
-import { colors } from "../../../theme/colors";
+import {
+  Alert,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import CleaningBackground from '../../components/CleaningBackground';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import HouseCard from '../../components/HouseCard';
+import ManageHousesViewModel from '../../../viewmodels/userProfile/ManageHousesViewModel';
+import { useEffect, useRef } from 'react';
+import TopNotification, {
+  TopNotificationHandle,
+} from '../../components/overlays/TopNotification';
+import { colors } from '../../../theme/colors';
 
 //* tipiado.
-import type { ProfileStackParamList, UserHouseResponseItem } from "../../../../domain";
+import type {
+  ProfileStackParamList,
+  UserHouseResponseItem,
+} from '../../../../domain';
 
-
-type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'ManageHouses'>;
-
+type NavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'ManageHouses'
+>;
 
 export const ManageHousesScreen = () => {
-  const navigation = useNavigation<NavigationProp>()
-  const { getHouses, houses, user, deleteHouse } = ManageHousesViewModel()
+  const navigation = useNavigation<NavigationProp>();
+  const { getHouses, houses, user, deleteHouse } = ManageHousesViewModel();
   const notifRef = useRef<TopNotificationHandle>(null);
-  
+
   useEffect(() => {
     const unsub = navigation.addListener('focus', () => {
-      getHouses()
-    })
-    return unsub
-  }, [navigation])
+      getHouses();
+    });
+    return unsub;
+  }, [navigation]);
 
   const handleAddHome = () => {
     const count = houses?.data?.length ?? 0;
-    if (count < 3) return navigation.navigate('AddHouse')
-    notifRef.current?.show('You can’t add more than 3 houses', 'error')
-      
-  }
+    if (count < 3) return navigation.navigate('AddHouse');
+    notifRef.current?.show('You can’t add more than 3 houses', 'error');
+  };
 
   const handleDeleteHouse = async (houseId: string) => {
     Alert.alert(
-      "Confirm delete house",
-      "Are you sure you want to delete this house?",
+      'Confirm delete house',
+      'Are you sure you want to delete this house?',
       [
-        { 
+        {
           text: 'Cancel',
           onPress: () => {},
         },
         {
           text: 'Delete',
-          onPress: () => onDeleteHouse(houseId)
-        }
-      ]
-    )
-  }
+          onPress: () => onDeleteHouse(houseId),
+        },
+      ],
+    );
+  };
 
   const onDeleteHouse = async (houseId: string) => {
-    const response = await deleteHouse(houseId)
-    if (!response.success) return notifRef.current?.show(response?.error!, 'error')
-    notifRef.current?.show('House deleted successfully', 'success')
-    getHouses()
-  }
+    const response = await deleteHouse(houseId);
+    if (!response.success)
+      return notifRef.current?.show(response?.error!, 'error');
+    notifRef.current?.show('House deleted successfully', 'success');
+    getHouses();
+  };
 
   return (
     <>
-      <CleaningBackground/>
+      <CleaningBackground />
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
 
@@ -71,10 +88,7 @@ export const ManageHousesScreen = () => {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>My houses</Text>
           {houses?.success && (
-            <TouchableOpacity 
-              style={styles.addButtom}
-              onPress={handleAddHome}
-            >
+            <TouchableOpacity style={styles.addButtom} onPress={handleAddHome}>
               <Text style={styles.textButtom}>+ Add house</Text>
             </TouchableOpacity>
           )}
@@ -82,19 +96,37 @@ export const ManageHousesScreen = () => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.optionsContainer}>
             {!houses?.success && (
-              <TouchableOpacity 
-                style={[styles.addButtom, {width: '90%', height: 60, justifyContent: 'center', borderRadius: 30}]}
+              <TouchableOpacity
+                style={[
+                  styles.addButtom,
+                  {
+                    width: '90%',
+                    height: 60,
+                    justifyContent: 'center',
+                    borderRadius: 30,
+                  },
+                ]}
                 onPress={() => navigation.navigate('AddHouse')}
               >
-                <Text style={[styles.textButtom, {fontSize: 24, fontWeight: 'bold'}]}>+ Add house</Text>
+                <Text
+                  style={[
+                    styles.textButtom,
+                    { fontSize: 24, fontWeight: 'bold' },
+                  ]}
+                >
+                  + Add house
+                </Text>
               </TouchableOpacity>
             )}
             {houses?.success && (
-              <FlatList<UserHouseResponseItem> 
-                style={{width: '100%'}}
-                contentContainerStyle={{width: '100%', paddingHorizontal: '5%'}}
+              <FlatList<UserHouseResponseItem>
+                style={{ width: '100%' }}
+                contentContainerStyle={{
+                  width: '100%',
+                  paddingHorizontal: '5%',
+                }}
                 data={houses?.data ?? []}
-                keyExtractor={(item) => item.id}
+                keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                   <HouseCard
                     name={item.name}
@@ -115,8 +147,8 @@ export const ManageHousesScreen = () => {
         </ScrollView>
       </View>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -165,11 +197,11 @@ const styles = StyleSheet.create({
     width: '35%',
     alignItems: 'center',
     borderRadius: 5,
-    backgroundColor: colors.darkGreen
+    backgroundColor: colors.darkGreen,
   },
   textButtom: {
     color: 'white',
     justifyContent: 'center',
     fontSize: 18,
-  }
-})
+  },
+});

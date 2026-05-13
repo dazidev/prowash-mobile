@@ -1,92 +1,123 @@
-import React, { useState } from "react"
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import Ionicons from "react-native-vector-icons/Ionicons"
-import { colors } from "../../theme/colors"
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { colors } from '../../theme/colors';
 
 type Props = {
-  title: string
-  value: string
-  onChangeText: (value: string) => void
-  error?: string
-  block?: boolean
-  successMessage?: string
-  password?: boolean
-  onBlur?: () => void
-  editable?: boolean
-}
+  title: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  error?: string;
+  block?: boolean;
+  successMessage?: string;
+  password?: boolean;
+  onBlur?: () => void;
+  editable?: boolean;
+};
 
-export const InputCustom: React.FC<Props> = ({title, value, onChangeText, error, block, successMessage, password, onBlur, editable}: Props) => {
-  const [isFocused, setIsFocused] = useState(false)
-  const [visible, setVisible] = useState(false)
+export const InputCustom: React.FC<Props> = ({
+  title,
+  value,
+  onChangeText,
+  error,
+  block,
+  successMessage,
+  password,
+  onBlur,
+  editable,
+}: Props) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const verifiedField = () => {
-    setIsFocused(false)
-    onBlur?.()
-  }
+    setIsFocused(false);
+    onBlur?.();
+  };
 
   const onIcon = () => {
-    setVisible(!visible)
-  }
+    setVisible(!visible);
+  };
 
   const isEditable = () => {
     if (block) {
-      editable = false
+      editable = false;
     }
-  }
+  };
 
-  isEditable()
+  isEditable();
 
   return (
     <View style={styles.optionContainer}>
       <Text style={styles.title}>{title}</Text>
 
       <View style={styles.inputContainer}>
-        <TextInput 
+        <TextInput
           value={value}
           style={[
             styles.input,
-            {paddingRight: password ? 50 : 15},
+            { paddingRight: password ? 50 : 15 },
             isFocused ? styles.inputFocused : styles.inputBlur,
-            error 
-              ? styles.inputError 
-              : isFocused ? styles.inputFocused : styles.inputBlur,
-            block ? {backgroundColor: colors.bgInactive, color: colors.itemInactive} : {}
+            error
+              ? styles.inputError
+              : isFocused
+              ? styles.inputFocused
+              : styles.inputBlur,
+            block
+              ? {
+                  backgroundColor: colors.bgInactive,
+                  color: colors.itemInactive,
+                }
+              : {},
           ]}
-          onFocus={ () => setIsFocused(true)}
-          onBlur={ verifiedField }
-          onChangeText={ onChangeText }
-          autoCapitalize={password ? "none" : "words"}
+          onFocus={() => setIsFocused(true)}
+          onBlur={verifiedField}
+          onChangeText={onChangeText}
+          autoCapitalize={password ? 'none' : 'words'}
           editable={editable}
           secureTextEntry={password && !visible}
           spellCheck={false}
         />
-        {block && <Ionicons name={'lock-closed-outline'} size={32} color={colors.inputGray} style={styles.icon}/>}
+        {block && (
+          <Ionicons
+            name={'lock-closed-outline'}
+            size={32}
+            color={colors.inputGray}
+            style={styles.icon}
+          />
+        )}
         {password && (
           <TouchableOpacity onPress={onIcon}>
-            <Ionicons 
+            <Ionicons
               name={visible ? 'eye-off-outline' : 'eye-outline'}
               size={32}
-              color={isFocused ? "black" : colors.inputGray}
+              color={isFocused ? 'black' : colors.inputGray}
               style={styles.iconTouch}
             />
           </TouchableOpacity>
         )}
-        
       </View>
       {error && <Text style={styles.error}>{error}</Text>}
-      {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
+      {successMessage && (
+        <Text style={styles.successMessage}>{successMessage}</Text>
+      )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
-  optionContainer:{
+  optionContainer: {
     width: '90%',
     marginBottom: 20,
   },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderColor: colors.inputGray,
   },
   input: {
@@ -113,27 +144,27 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 13,
-    color: 'red'
+    color: 'red',
   },
   successMessage: {
     fontSize: 13,
-    color: colors.itemSuccess
+    color: colors.itemSuccess,
   },
   title: {
-    fontSize: 15
+    fontSize: 15,
   },
-  icon : {
+  icon: {
     right: 40,
     top: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconTouch : {
+  iconTouch: {
     position: 'absolute',
     right: 10,
     top: -15,
     height: 45,
     justifyContent: 'center',
     alignItems: 'center',
-  }
-})
+  },
+});

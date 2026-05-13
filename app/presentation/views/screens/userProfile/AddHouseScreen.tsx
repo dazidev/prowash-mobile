@@ -1,38 +1,53 @@
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import CleaningBackground from "../../components/CleaningBackground";
-import { Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { InputCustom } from "../../components/InputCustom";
-import AddHouseViewModel, { INITIAL_HOUSE_STATE } from "../../../viewmodels/userProfile/AddHouseViewModel";
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import TopNotification, { TopNotificationHandle } from "../../components/overlays/TopNotification";
-import { useRef } from "react";
-import { CamaraAdapter } from "../../../../infrastructure";
-import { colors } from "../../../theme/colors";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import CleaningBackground from '../../components/CleaningBackground';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { InputCustom } from '../../components/InputCustom';
+import AddHouseViewModel, {
+  INITIAL_HOUSE_STATE,
+} from '../../../viewmodels/userProfile/AddHouseViewModel';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import TopNotification, {
+  TopNotificationHandle,
+} from '../../components/overlays/TopNotification';
+import { useRef } from 'react';
+import { CamaraAdapter } from '../../../../infrastructure';
+import { colors } from '../../../theme/colors';
 
 //* tipiado.
-import type { ProfileStackParamList } from "../../../../domain";
+import type { ProfileStackParamList } from '../../../../domain';
 
-type NavigationProp = NativeStackNavigationProp<ProfileStackParamList, 'AddHouse'>
+type NavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'AddHouse'
+>;
 
 const CITIES_SC = [
-    "Anderson",
-    "Duncan",
-    "Easley",
-    "Fountain Inn",
-    "Greenville",
-    "Greer",
-    "Mauldin",
-    "Moore",
-    "Simpsonville",
-    "Spartanburg",
-    "Taylors",
-    "Williamston",
-  ] as const
+  'Anderson',
+  'Duncan',
+  'Easley',
+  'Fountain Inn',
+  'Greenville',
+  'Greer',
+  'Mauldin',
+  'Moore',
+  'Simpsonville',
+  'Spartanburg',
+  'Taylors',
+  'Williamston',
+] as const;
 
 const AddHouseScreen = () => {
-  const navigation = useNavigation<NavigationProp>()
-  const { 
+  const navigation = useNavigation<NavigationProp>();
+  const {
     fieldValue,
     setFieldValue,
     handleChangeField,
@@ -40,50 +55,56 @@ const AddHouseScreen = () => {
     saveChanges,
     setChanges,
     photo,
-    setPhoto } = AddHouseViewModel()
+    setPhoto,
+  } = AddHouseViewModel();
 
   const { showActionSheetWithOptions } = useActionSheet();
   const notifRef = useRef<TopNotificationHandle>(null);
 
   const openCitySheet = () => {
-    const options = ["Cancel", ...CITIES_SC]
+    const options = ['Cancel', ...CITIES_SC];
     showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex: 0,
-        title: "Select city",
+        title: 'Select city',
       },
-      (buttonIndex) => {
+      buttonIndex => {
         if (buttonIndex != null && buttonIndex > 0) {
-          const city = CITIES_SC[buttonIndex - 1]
-          handleChangeField(city, "city")
-          handleChangeField('SC', 'state')
+          const city = CITIES_SC[buttonIndex - 1];
+          handleChangeField(city, 'city');
+          handleChangeField('SC', 'state');
         }
-      }
-    )
-  }
+      },
+    );
+  };
 
-  const sanitizeStreet = (string: string) => string.normalize('NFC').replace(/[^\p{L}\p{N} \.,'\/\-&#]/gu, '');
+  const sanitizeStreet = (string: string) =>
+    string.normalize('NFC').replace(/[^\p{L}\p{N} \.,'\/\-&#]/gu, '');
 
   const onSave = async () => {
-    const result = await saveChanges()
-    if (!result.success) return notifRef.current?.show(result.message!, 'error');
-      
+    const result = await saveChanges();
+    if (!result.success)
+      return notifRef.current?.show(result.message!, 'error');
+
     notifRef.current?.show('House saved successfully', 'success');
-    setChanges(false)
-    setFieldValue(() => ({...INITIAL_HOUSE_STATE}))
-  }
+    setChanges(false);
+    setFieldValue(() => ({ ...INITIAL_HOUSE_STATE }));
+  };
 
   const takePicture = async () => {
-    const selectPhoto = await CamaraAdapter.getPicturesFromLibrary(1)
-    setPhoto(selectPhoto?.[0])
-  }
+    const selectPhoto = await CamaraAdapter.getPicturesFromLibrary(1);
+    setPhoto(selectPhoto?.[0]);
+  };
 
   return (
     <>
-      <CleaningBackground/>
+      <CleaningBackground />
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
 
@@ -94,11 +115,12 @@ const AddHouseScreen = () => {
             <Text style={styles.title}>Add house</Text>
           </View>
           <View style={styles.optionsContainer}>
-          
             <InputCustom
               title="*House name"
               value={fieldValue.houseName}
-              onChangeText={(value) => {handleChangeField(sanitizeStreet(value), 'houseName')}}
+              onChangeText={value => {
+                handleChangeField(sanitizeStreet(value), 'houseName');
+              }}
             />
 
             <View style={styles.addressContainer}>
@@ -106,13 +128,17 @@ const AddHouseScreen = () => {
               <InputCustom
                 title="*Street"
                 value={fieldValue.street}
-                onChangeText={(value) => {handleChangeField(sanitizeStreet(value), 'street')}}
+                onChangeText={value => {
+                  handleChangeField(sanitizeStreet(value), 'street');
+                }}
               />
 
               <InputCustom
                 title="Street 2 (or leave blank)"
                 value={fieldValue.complementStreet}
-                onChangeText={(value) => {handleChangeField(sanitizeStreet(value), 'complementStreet')}}
+                onChangeText={value => {
+                  handleChangeField(sanitizeStreet(value), 'complementStreet');
+                }}
               />
               <View style={{ width: '100%', position: 'relative' }}>
                 <InputCustom
@@ -128,8 +154,13 @@ const AddHouseScreen = () => {
                 />
               </View>
 
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <View style={{width: '35%'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <View style={{ width: '35%' }}>
                   <InputCustom
                     title="*State"
                     value={fieldValue.state}
@@ -137,16 +168,21 @@ const AddHouseScreen = () => {
                     onChangeText={() => {}}
                   />
                 </View>
-                <View style={{width: '59%'}}>
+                <View style={{ width: '59%' }}>
                   <InputCustom
                     title="*Zip code"
                     value={fieldValue.zipcode}
-                    onChangeText={(value) => {handleChangeField(value.replace(/[^0-9-]/g, ''), 'zipcode')}}
+                    onChangeText={value => {
+                      handleChangeField(
+                        value.replace(/[^0-9-]/g, ''),
+                        'zipcode',
+                      );
+                    }}
                   />
                 </View>
               </View>
             </View>
-            <View style={{paddingHorizontal: 20, alignSelf: 'flex-start'}}>
+            <View style={{ paddingHorizontal: 20, alignSelf: 'flex-start' }}>
               <Text style={styles.titlePhoto}>Photo of the house</Text>
             </View>
 
@@ -161,29 +197,45 @@ const AddHouseScreen = () => {
 
             {photo && (
               <View style={styles.imageContainer}>
-                <Image source={{ uri: photo.uri }} style={styles.image}/>
-                <TouchableOpacity onPress={takePicture} style={styles.anotherImageButtom}>
-                  <Text style={styles.textAnotherImageButtom}>Select another photo</Text>
+                <Image source={{ uri: photo.uri }} style={styles.image} />
+                <TouchableOpacity
+                  onPress={takePicture}
+                  style={styles.anotherImageButtom}
+                >
+                  <Text style={styles.textAnotherImageButtom}>
+                    Select another photo
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}
 
-            
-
-            <TouchableOpacity 
-              onPress={onSave} 
-              style={[styles.saveButton, {backgroundColor: changes ? colors.principalGreen : colors.bgInactive}]}
+            <TouchableOpacity
+              onPress={onSave}
+              style={[
+                styles.saveButton,
+                {
+                  backgroundColor: changes
+                    ? colors.principalGreen
+                    : colors.bgInactive,
+                },
+              ]}
               disabled={!changes}
             >
-              <Text style={[styles.saveText, {color: changes ? 'black' : colors.itemInactive}]}>Save</Text>
+              <Text
+                style={[
+                  styles.saveText,
+                  { color: changes ? 'black' : colors.itemInactive },
+                ]}
+              >
+                Save
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
-        
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -227,12 +279,12 @@ const styles = StyleSheet.create({
     fontSize: 60,
     color: colors.principalBlue,
   },
-  titleAddress : {
+  titleAddress: {
     marginVertical: 10,
-    fontSize: 18
+    fontSize: 18,
   },
   addressContainer: {
-    backgroundColor: "#BFDFFF20",
+    backgroundColor: '#BFDFFF20',
     borderWidth: 1,
     borderColor: '#BFDFFF90',
     paddingHorizontal: 25,
@@ -248,7 +300,7 @@ const styles = StyleSheet.create({
   buttomPhoto: {
     width: '90%',
     height: 100,
-    backgroundColor: "#BFDFFF50",
+    backgroundColor: '#BFDFFF50',
     borderWidth: 3,
     borderStyle: 'dashed',
     borderColor: '#006ddbff',
@@ -273,24 +325,24 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
   imageContainer: {
     width: '90%',
     height: 'auto',
-    backgroundColor: "#BFDFFF50",
+    backgroundColor: '#BFDFFF50',
     borderWidth: 3,
     borderStyle: 'dashed',
     borderColor: '#006ddbff',
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   image: {
     width: 300,
     height: 200,
-    borderRadius: 5
+    borderRadius: 5,
   },
   anotherImageButtom: {
     position: 'relative',
@@ -305,7 +357,7 @@ const styles = StyleSheet.create({
   textAnotherImageButtom: {
     fontSize: 16,
     fontWeight: 'bold',
-  }
-})
+  },
+});
 
-export default AddHouseScreen
+export default AddHouseScreen;

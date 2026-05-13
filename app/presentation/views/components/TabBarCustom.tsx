@@ -1,8 +1,7 @@
-import { Key } from "react";
-import { FlexAlignType, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { Key } from 'react';
+import { FlexAlignType, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export function TabBarCustom({ state, descriptors, navigation }: any) {
   const insets = useSafeAreaInsets();
@@ -27,11 +26,11 @@ export function TabBarCustom({ state, descriptors, navigation }: any) {
         elevation: 8,
       }}
     >
-      {state.routes.map((route:any, index:any) => {
+      {state.routes.map((route: any, index: any) => {
         const focused = state.index === index;
         const onPress = () => {
           const event = navigation.emit({
-            type: "tabPress",
+            type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });
@@ -41,33 +40,34 @@ export function TabBarCustom({ state, descriptors, navigation }: any) {
         };
 
         const map = {
-          UserProfile: ["person-outline", "person"],
-          Home: ["home-outline", "home"],
-          Services: ["bar-chart-outline", "bar-chart"],
+          UserProfile: ['person-outline', 'person'],
+          Home: ['home-outline', 'home'],
+          Services: ['bar-chart-outline', 'bar-chart'],
         } as Record<string, [string, string]>;
-        
-        const [inactive, active] =
-          map[route.name] ?? ["help-circle-outline", "help-circle"];
+
+        const [inactive, active] = map[route.name] ?? [
+          'help-circle-outline',
+          'help-circle',
+        ];
 
         const name = focused ? active : inactive;
 
-        type RouteName = "UserProfile" | "Home" | "Services";
+        type RouteName = 'UserProfile' | 'Home' | 'Services';
 
         const alignMap = {
-          Home: "flex-start",
-          UserProfile: "center",
-          Services: "flex-end",
+          Home: 'flex-start',
+          UserProfile: 'center',
+          Services: 'flex-end',
         };
         // TODO: ESTABA MAPEANDO LOS ALING Y DEBO APRENDER BIEN ESOS MAPEOS
         // Uso dentro del render de cada tab:
-        const align = alignMap[route.name as RouteName] ?? "center"
+        const align = alignMap[route.name as RouteName] ?? 'center';
 
         return (
-          
           <TouchableOpacity
             key={route.key}
             onPress={onPress}
-            style={{ 
+            style={{
               flex: 1,
               alignItems: align as FlexAlignType,
               justifyContent: 'space-evenly',
@@ -82,13 +82,13 @@ export function TabBarCustom({ state, descriptors, navigation }: any) {
                 borderRadius: 60,
                 backgroundColor: focused ? '#fff' : '',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}
             >
               <Ionicons
                 name={name}
                 size={focused ? 36 : 32}
-                color={focused ? "#0D47A1" : "#cfd8dc"}
+                color={focused ? '#0D47A1' : '#cfd8dc'}
               />
             </View>
           </TouchableOpacity>

@@ -1,33 +1,40 @@
-import { Image, StyleSheet, Text, TouchableOpacity } from "react-native"
-import { View } from "react-native"
-import Ionicons from "react-native-vector-icons/Ionicons"
-import { colors } from "../../theme/colors"
-import { useMemo, useState } from "react"
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { colors } from '../../theme/colors';
+import { useMemo, useState } from 'react';
 
 type Props = {
-  name: string
-  street: string
-  complementStreet: string
-  city: string
-  state: string
-  zipcode: string
-  imageUrl?: string
-  houseId: string
-  onDeleteHouse: () => Promise<void>
-}
+  name: string;
+  street: string;
+  complementStreet: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  imageUrl?: string;
+  houseId: string;
+  onDeleteHouse: () => Promise<void>;
+};
 
-
-
-
-const HouseCard = ({ name, street, complementStreet, city, state, zipcode, imageUrl, houseId, onDeleteHouse }: Props) => {
+const HouseCard = ({
+  name,
+  street,
+  complementStreet,
+  city,
+  state,
+  zipcode,
+  imageUrl,
+  houseId,
+  onDeleteHouse,
+}: Props) => {
   const [useFallback, setUseFallback] = useState(false);
 
   const primary = useMemo(
     () => (imageUrl ? `https://images.prowash365.com/${imageUrl}` : null),
-    [imageUrl]
-  )
+    [imageUrl],
+  );
   const fallback =
-    "https://imgix.cosentino.com/es/wp-content/uploads/2023/07/Lumire-70-Facade-MtWaverley-vic-1.jpg?auto=format%2Ccompress&ixlib=php-3.3.0";
+    'https://imgix.cosentino.com/es/wp-content/uploads/2023/07/Lumire-70-Facade-MtWaverley-vic-1.jpg?auto=format%2Ccompress&ixlib=php-3.3.0';
 
   const uri = useFallback || !primary ? fallback : primary;
 
@@ -44,19 +51,26 @@ const HouseCard = ({ name, street, complementStreet, city, state, zipcode, image
           <TouchableOpacity style={styles.icon}>
             <Ionicons name={'create-outline'} size={28} color={'black'} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={() => void onDeleteHouse()}>
+          <TouchableOpacity
+            style={styles.icon}
+            onPress={() => void onDeleteHouse()}
+          >
             <Ionicons name={'trash-outline'} size={28} color={'red'} />
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.nameText}>{name}</Text>
-        <Text style={styles.infoText}>{street} {complementStreet}</Text>
-        <Text style={styles.infoText}>{city}, {state} {zipcode}</Text>
+        <Text style={styles.infoText}>
+          {street} {complementStreet}
+        </Text>
+        <Text style={styles.infoText}>
+          {city}, {state} {zipcode}
+        </Text>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -76,7 +90,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5
+    marginBottom: 5,
   },
   infoText: {
     fontSize: 18,
@@ -100,8 +114,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 5
+    margin: 5,
   },
-})
+});
 
-export default HouseCard
+export default HouseCard;

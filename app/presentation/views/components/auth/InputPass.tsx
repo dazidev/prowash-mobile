@@ -1,38 +1,35 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type Props = {
-  password: string,
-  placeholder: string,
+  password: string;
+  placeholder: string;
   setPassword: (password: string) => void;
-}
+};
 
 export const InputPass = ({ password, placeholder, setPassword }: Props) => {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(true);
 
   const handleChange = (value: string) => {
-    setPassword(value)
-  }
+    setPassword(value);
+  };
 
   const handleVisible = () => {
-    setVisible(!visible)
-  }
+    setVisible(!visible);
+  };
 
   return (
     <View style={styles.container}>
       <TextInput
         placeholder={placeholder}
         value={password}
-        onChangeText={(value) => handleChange(value)}
+        onChangeText={value => handleChange(value)}
         secureTextEntry={visible}
         style={styles.input}
         placeholderTextColor="#999"
       />
-      <TouchableOpacity
-        style={styles.iconEye}
-        onPress={handleVisible}
-      >
+      <TouchableOpacity style={styles.iconEye} onPress={handleVisible}>
         <Ionicons
           name={visible ? 'eye-outline' : 'eye-off-outline'}
           size={32}
@@ -40,8 +37,8 @@ export const InputPass = ({ password, placeholder, setPassword }: Props) => {
         />
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

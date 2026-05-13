@@ -1,8 +1,3 @@
-
-
 export const EditProfileNameScreen = () => {
-  return (
-    <>
-    </>
-  )
-}
+  return <></>;
+};
