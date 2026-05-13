@@ -135,18 +135,15 @@ export class AuthService {
   }
 
   static async checkStatus() {
-    const { setStatus, setTokens, setUser } = useContext(AuthContext);
     try {
       const response = await api.get('/api/auth/check-status');
-      if (!response) {
-        setStatus('unauthenticated');
-        setTokens(undefined);
-        setUser(undefined);
-      }
-      // TODO: AGREGAR SI HAY RESPUESTA, EL ESTADO.
-    } catch (error) {
-      console.log({ error });
-      return null;
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 }

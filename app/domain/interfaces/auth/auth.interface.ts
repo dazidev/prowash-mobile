@@ -1,4 +1,8 @@
-export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
+export type AuthStatus =
+  | 'authenticated'
+  | 'unauthenticated'
+  | 'checking'
+  | 'needs-email-verification';
 
 export interface NestErrorResponse {
   message: string | string[];
@@ -11,13 +15,15 @@ export interface AuthTokens {
   refresh: string;
 }
 
+export interface AuthExpiresIn {
+  access: number;
+  refresh: number;
+}
+
 export interface UserLoginResponse {
   user: User;
-  tokens: {
-    access: string;
-    refresh: string;
-  };
-  expiresIn: AuthTokens;
+  tokens: AuthTokens;
+  expiresIn: AuthExpiresIn;
 }
 
 export type UserRole = 'ADMIN' | 'MOD' | 'USER';

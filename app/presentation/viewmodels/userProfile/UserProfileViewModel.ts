@@ -1,19 +1,24 @@
 import { useContext, useState } from 'react';
 import { Alert } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
-import { AuthService } from '../../../infrastructure';
+import { AuthService, TokenService } from '../../../infrastructure';
 
 export const UserProfileViewModel = () => {
   const [alert, setAlert] = useState();
   const { setStatus, setTokens, setUser, tokens } = useContext(AuthContext);
 
   const handleLogout = async () => {
-    if (tokens?.refresh) {
-      await AuthService.logout(tokens.refresh);
+    try {
+      if (tokens?.refresh) {
+        await AuthService.logout(tokens.refresh);
+      }
+    } finally {
+      await TokenService.clearTokens();
+
+      setStatus('unauthenticated');
+      setUser(undefined);
+      setTokens(undefined);
     }
-    setStatus('unauthenticated');
-    setUser(undefined);
-    setTokens(undefined);
   };
 
   const handleOptions = (option: number) => {

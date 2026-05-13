@@ -12,6 +12,7 @@ import type { AuthStackParamList } from '../../domain';
 export type RootStackParamList = {
   Auth: undefined;
   App: undefined;
+  EmailVerify: undefined;
 };
 
 const Root = createNativeStackNavigator<RootStackParamList>();
@@ -33,6 +34,9 @@ const RootNavigator = () => {
     <Root.Navigator screenOptions={{ headerShown: false }}>
       {status === 'unauthenticated' && (
         <Root.Screen name="Auth" component={AuthNavigator} />
+      )}
+      {status === 'needs-email-verification' && (
+        <Root.Screen name="EmailVerify" component={EmailVerifyScreen} />
       )}
       {status === 'authenticated' && (
         <Root.Screen name="App" component={AppTabNavigator} />

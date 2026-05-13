@@ -2,11 +2,7 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
 
 //* tipiado.
-import type {
-  AuthStatus,
-  AuthTokensInterface,
-  UserLoginResponseInterface,
-} from '../../domain';
+import type { AuthStatus, AuthTokens, User } from '../../domain';
 
 //import { AuthService } from '../services/AuthService'
 //import { useNavigation } from '@react-navigation/native'
@@ -15,12 +11,8 @@ import type {
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [status, setStatus] = useState<AuthStatus>('unauthenticated');
-  const [tokens, setTokens] = useState<AuthTokensInterface | undefined>(
-    undefined,
-  );
-  const [user, setUser] = useState<UserLoginResponseInterface | undefined>(
-    undefined,
-  );
+  const [tokens, setTokens] = useState<AuthTokens | undefined>(undefined);
+  const [user, setUser] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     //AuthService.checkStatus()

@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import CountdownTimer from '../../components/CountdownTimer';
 import { AuthContext } from '../../../context/AuthContext';
+import { useAuth } from '../../../hooks/auth/useAuth';
 
 type RootStackParamList = {
   Login: undefined;
@@ -31,6 +32,7 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
 export const EmailVerifyScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const { user } = useContext(AuthContext);
+  const { cancelEmailVerification } = useAuth();
   const {
     code,
     handleValidate,
@@ -60,7 +62,7 @@ export const EmailVerifyScreen = () => {
       <BackgroundBubbles />
       <View style={styles.container}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={cancelEmailVerification}
           style={styles.backButton}
         >
           <Text style={styles.backText}>‹</Text>

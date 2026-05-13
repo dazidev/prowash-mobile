@@ -10,7 +10,7 @@ export interface HandleLoginResponse {
 }
 
 export const LoginViewModel = () => {
-  const { loginUser } = useAuth();
+  const { loginUser, requireEmailVerification } = useAuth();
   const [credentials, setCredentials] = useState<AuthCredentials>({
     email: '',
     password: '',
@@ -71,8 +71,6 @@ export const LoginViewModel = () => {
       const user = response.data.user;
       const tokens = response.data.tokens;
 
-      await loginUser(user, tokens);
-
       if (!user.isEmailVerified) {
         await AuthService.sendEmailCode(
           user.email,
@@ -80,13 +78,19 @@ export const LoginViewModel = () => {
           user.lastname,
           user.id,
         );
+
+        await requireEmailVerification(user, tokens);
+
         return {
           success: true,
           emailVerified: user.isEmailVerified,
         };
       }
+
+      await loginUser(user, tokens);
+
       return {
-        success: false,
+        success: true,
         emailVerified: user.isEmailVerified,
       };
     }
