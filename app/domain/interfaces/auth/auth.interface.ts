@@ -1,21 +1,21 @@
-export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking'
+export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
 export interface UserLoginResponseInterface {
-  id: string
-  name: string
-  lastname: string
-  email: string
-  password?: string
-  phoneNumber?: string
-  isEmailVerified?: boolean
-  isPhoneMumberVerified?: boolean
-  role?: string
-  status?: string
+  id: string;
+  name: string;
+  lastname: string;
+  email: string;
+  password?: string;
+  phoneNumber?: string;
+  isEmailVerified?: boolean;
+  isPhoneMumberVerified?: boolean;
+  role?: string;
+  status?: string;
 }
 
 export interface AuthTokensInterface {
-  access: string
-  refresh: string
+  access: string;
+  refresh: string;
 }
 
 export interface AuthUserResponseInterface {
@@ -51,6 +51,6 @@ export interface HandleLoginResponseInterface {
 }
 
 export interface CredentialsInterface {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }

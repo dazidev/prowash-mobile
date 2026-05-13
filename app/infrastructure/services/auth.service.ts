@@ -1,119 +1,128 @@
-import axios from 'axios'
+import axios from 'axios';
 
-import { api } from '../config/axios.config'
+import { api } from '../config/axios.config';
 
-import { useContext } from 'react'
-import { AuthContext } from '../../presentation'
-import { UserRegisterInterface } from '../../domain'
+import { useContext } from 'react';
+import { AuthContext } from '../../presentation';
+import { UserRegisterInterface } from '../../domain';
 
 export class AuthService {
-  static async registerUser (user: UserRegisterInterface) {
+  static async registerUser(user: UserRegisterInterface) {
     try {
-      const response = await api.post('/api/auth/register/user', user)
-      return response.data
+      const response = await api.post('/api/auth/register/user', user);
+      return response.data;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        return error.response.data
+        return error.response.data;
       }
       return {
         success: false,
         error: 'NETWORK_ERROR',
         message: 'Unable to connect. Please try again later.',
-      }
+      };
     }
   }
-  static async sendEmailCode (email: string, name: string, lastname: string, userId: string) {
-    try {
-      const jsonEmail = {
-        "email": email,
-        "name": name,
-        "lastname": lastname,
-        "userId": userId
-      }
-      const response = await api.post('/api/auth/register/verify-email', jsonEmail)
-      return response.data
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data
-      }
-      return {
-        success: false,
-        error: 'NETWORK_ERROR',
-        message: 'Unable to connect. Please try again later.',
-      }
-    }
-  }
-  static async requestNewCode (email: string) {
+  static async sendEmailCode(
+    email: string,
+    name: string,
+    lastname: string,
+    userId: string,
+  ) {
     try {
       const jsonEmail = {
-        "email": email
-      }
-      const response = await api.post('/api/auth/register/new-code', jsonEmail)
-      return response.data
+        email: email,
+        name: name,
+        lastname: lastname,
+        userId: userId,
+      };
+      const response = await api.post(
+        '/api/auth/register/verify-email',
+        jsonEmail,
+      );
+      return response.data;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        return error.response.data
+        return error.response.data;
       }
       return {
         success: false,
         error: 'NETWORK_ERROR',
         message: 'Unable to connect. Please try again later.',
-      }
+      };
     }
   }
-  static async confirmCode (userId: string, code: string) {
+  static async requestNewCode(email: string) {
+    try {
+      const jsonEmail = {
+        email: email,
+      };
+      const response = await api.post('/api/auth/register/new-code', jsonEmail);
+      return response.data;
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        return error.response.data;
+      }
+      return {
+        success: false,
+        error: 'NETWORK_ERROR',
+        message: 'Unable to connect. Please try again later.',
+      };
+    }
+  }
+  static async confirmCode(userId: string, code: string) {
     try {
       const jsonCode = {
-        "userId": userId,
-        "code": code
-      }
-      const response = await api.post('/api/auth/register/verify-email-code', jsonCode)
-      return response.data
+        userId: userId,
+        code: code,
+      };
+      const response = await api.post(
+        '/api/auth/register/verify-email-code',
+        jsonCode,
+      );
+      return response.data;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        return error.response.data
+        return error.response.data;
       }
       return {
         success: false,
         error: 'NETWORK_ERROR',
         message: 'Unable to connect. Please try again later.',
-      }
+      };
     }
   }
-  static async confirmLogin (email: string, password: string) {
+  static async confirmLogin(email: string, password: string) {
     try {
       const jsonLogin = {
-        "email": email,
-        "password": password
-      }
-      const response = await api.post('/api/auth/login/user', jsonLogin)
-      return response.data
+        email: email,
+        password: password,
+      };
+      const response = await api.post('/api/auth/login/user', jsonLogin);
+      return response.data;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        return error.response.data
+        return error.response.data;
       }
       return {
         success: false,
         error: 'NETWORK_ERROR',
         message: 'Unable to connect. Please try again later.',
-      }
+      };
     }
   }
-  static async checkStatus () {
-    const { setStatus, setTokens, setUser } = useContext(AuthContext)
+  static async checkStatus() {
+    const { setStatus, setTokens, setUser } = useContext(AuthContext);
     try {
-      const response = await api.get('/api/auth/check-status')
+      const response = await api.get('/api/auth/check-status');
       if (!response) {
-        setStatus('unauthenticated')
-        setTokens(undefined)
-        setUser(undefined)
+        setStatus('unauthenticated');
+        setTokens(undefined);
+        setUser(undefined);
       }
       // TODO: AGREGAR SI HAY RESPUESTA, EL ESTADO.
     } catch (error) {
-      console.log({error})
-      return null
+      console.log({ error });
+      return null;
     }
   }
 }
-
-

@@ -1,5 +1,5 @@
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import RootNavigator from './presentation/navigation/RootNavigator';
 import AuthProvider from './presentation/context/AuthProvider';
 import 'react-native-gesture-handler';
@@ -15,6 +15,6 @@ const App = () => {
         </NavigationContainer>
       </AuthProvider>
     </GestureHandlerRootView>
-  )
-}
-export default App
+  );
+};
+export default App;
