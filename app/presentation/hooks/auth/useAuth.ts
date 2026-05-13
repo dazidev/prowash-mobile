@@ -2,16 +2,13 @@ import { useCallback, useContext } from 'react';
 
 import { AuthContext } from '../../../presentation';
 import { TokenService } from '../../../infrastructure';
-import {
-  AuthTokensInterface,
-  UserLoginResponseInterface,
-} from '../../../domain';
+import type { AuthTokens, User } from '../../../domain';
 
 export function useAuth() {
   const { setStatus, setTokens, setUser } = useContext(AuthContext);
 
   const loginUser = useCallback(
-    async (user: UserLoginResponseInterface, tokens: AuthTokensInterface) => {
+    async (user: User, tokens: AuthTokens) => {
       setStatus('authenticated');
       setTokens(tokens);
       setUser(user);

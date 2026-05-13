@@ -12,7 +12,6 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { LoginViewModel } from '../../../viewmodels/auth/LoginViewModel';
-import { AuthContext } from '../../../context/AuthContext';
 import { RootStackParamList } from '../../../../domain/interfaces/navegation/navigation.interface';
 
 //* componentes
@@ -22,7 +21,6 @@ import OrSeparator from '../../components/OrSeparator';
 import BackgroundBubbles from '../../components/BackgroundBubbles';
 
 //* tipiado.
-import type { HandleLoginResponseInterface } from '../../../../domain';
 
 // TODO: POSTING y LOWERCASE
 
@@ -40,18 +38,18 @@ const LoginScreen = () => {
     validations,
     handleLogin,
     isLoading,
+    setIsLoading,
   } = LoginViewModel();
 
   const handleButtonLogin = async () => {
-    const result: HandleLoginResponseInterface = await handleLogin(
-      credentials.email,
-      credentials.password,
-    );
+    setIsLoading(true);
+    const result = await handleLogin(credentials.email, credentials.password);
     if (result.success) {
       if (!result.emailVerified) {
         navigation.navigate('EmailVerify');
       }
     }
+    setIsLoading(false);
   };
 
   const handlePassword = (password: string) => {
@@ -99,7 +97,7 @@ const LoginScreen = () => {
             isLoading={isLoading}
             onPress={handleButtonLogin}
           />
-          {!error.success && <Text style={styles.error}>{error.message}</Text>}
+          {error && <Text style={styles.error}>{error}</Text>}
           <OrSeparator />
           <ButtonRegisterLogin
             title="Create an Account"

@@ -1,19 +1,15 @@
 import { createContext } from 'react';
 
 //* tipiado.
-import type {
-  AuthStatus,
-  AuthTokensInterface,
-  UserLoginResponseInterface,
-} from '../../domain';
+import type { AuthStatus, AuthTokens, User } from '../../domain';
 
 export interface AuthState {
   status: AuthStatus;
-  tokens?: AuthTokensInterface | undefined;
-  user?: UserLoginResponseInterface | undefined;
+  tokens?: AuthTokens | undefined;
+  user?: User | undefined;
   setStatus: (status: AuthStatus) => void;
-  setTokens: (tokens: AuthTokensInterface | undefined) => void;
-  setUser: (user: UserLoginResponseInterface | undefined) => void;
+  setTokens: (tokens: AuthTokens | undefined) => void;
+  setUser: (user: User | undefined) => void;
 }
 
 export const AuthContext = createContext<AuthState>({

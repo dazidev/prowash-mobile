@@ -1,10 +1,20 @@
 import { useContext, useState } from 'react';
 import { Alert } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { AuthService } from '../../../infrastructure';
 
 export const UserProfileViewModel = () => {
   const [alert, setAlert] = useState();
-  const { setStatus, setTokens, setUser } = useContext(AuthContext);
+  const { setStatus, setTokens, setUser, tokens } = useContext(AuthContext);
+
+  const handleLogout = async () => {
+    if (tokens?.refresh) {
+      await AuthService.logout(tokens.refresh);
+    }
+    setStatus('unauthenticated');
+    setUser(undefined);
+    setTokens(undefined);
+  };
 
   const handleOptions = (option: number) => {
     switch (option) {
@@ -22,11 +32,7 @@ export const UserProfileViewModel = () => {
           },
           {
             text: 'Logout',
-            onPress: () => {
-              setStatus('unauthenticated');
-              setUser(undefined);
-              setTokens(undefined);
-            },
+            onPress: handleLogout,
           },
         ]);
         break;
