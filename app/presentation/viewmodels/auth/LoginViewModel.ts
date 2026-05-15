@@ -43,10 +43,7 @@ export const LoginViewModel = () => {
     }
   };
 
-  const handleLogin = async (
-    email: string,
-    password: string,
-  ): Promise<HandleLoginResponse> => {
+  const handleLogin = async (email: string, password: string) => {
     setError('');
     const emailIsOk = verifyEmail(email);
     const passwordIsOk = verifyPassword(password);
@@ -58,13 +55,13 @@ export const LoginViewModel = () => {
       setError(
         'Please check your email and password. Make sure all fields are filled out correctly.',
       );
-      return { success: false };
+      return;
     }
     const response = await AuthService.login(email, password);
 
     if (!response.success) {
       setError(`${response.message}`);
-      return { success: false };
+      return;
     }
 
     if (response.data) {
@@ -72,22 +69,13 @@ export const LoginViewModel = () => {
       const tokens = response.data.tokens;
 
       if (!user.isEmailVerified) {
-        await AuthService.sendEmailCode();
-
         await requireEmailVerification(user, tokens);
-
-        return {
-          success: true,
-          emailVerified: user.isEmailVerified,
-        };
+        await AuthService.sendEmailCode();
+        return;
       }
 
       await loginUser(user, tokens);
-
-      return {
-        success: true,
-        emailVerified: user.isEmailVerified,
-      };
+      return;
     }
 
     return { success: false };

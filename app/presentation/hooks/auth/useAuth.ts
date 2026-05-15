@@ -9,20 +9,22 @@ export function useAuth() {
 
   const loginUser = useCallback(
     async (user: User, tokens: AuthTokens) => {
-      setStatus('authenticated');
+      await TokenService.saveTokens(tokens.access, tokens.refresh);
+
       setTokens(tokens);
       setUser(user);
-      await TokenService.saveTokens(tokens.access, tokens.refresh);
+      setStatus('authenticated');
     },
     [setStatus, setTokens, setUser],
   );
 
   const requireEmailVerification = useCallback(
     async (user: User, tokens: AuthTokens) => {
-      setStatus('needs-email-verification');
+      await TokenService.saveTokens(tokens.access, tokens.refresh);
       setTokens(tokens);
       setUser(user);
-      await TokenService.saveTokens(tokens.access, tokens.refresh);
+
+      setStatus('needs-email-verification');
     },
     [setStatus, setTokens, setUser],
   );

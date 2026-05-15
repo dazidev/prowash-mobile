@@ -43,12 +43,7 @@ const LoginScreen = () => {
 
   const handleButtonLogin = async () => {
     setIsLoading(true);
-    const result = await handleLogin(credentials.email, credentials.password);
-    if (result.success) {
-      if (!result.emailVerified) {
-        navigation.navigate('EmailVerify');
-      }
-    }
+    await handleLogin(credentials.email, credentials.password);
     setIsLoading(false);
   };
 

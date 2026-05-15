@@ -39,6 +39,8 @@ export const EmailVerifyScreen = () => {
     setIsLoading(false);
   };
 
+  console.log(user);
+
   return (
     <>
       <BackgroundBubbles />
