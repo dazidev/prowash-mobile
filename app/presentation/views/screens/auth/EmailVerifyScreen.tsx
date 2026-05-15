@@ -10,27 +10,11 @@ import {
 import BackgroundBubbles from '../../components/BackgroundBubbles';
 import { useEmailVerifyViewModel } from '../../../viewmodels/auth/EmailVerifyViewModel';
 import ButtonRegisterLogin from '../../components/ButtonRegisterLogin';
-
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import CountdownTimer from '../../components/CountdownTimer';
 import { AuthContext } from '../../../context/AuthContext';
 import { useAuth } from '../../../hooks/auth/useAuth';
 
-type RootStackParamList = {
-  Login: undefined;
-  Register: undefined;
-  EmailVerify: undefined;
-  MainBottomTab: undefined;
-};
-
-type LoginScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'EmailVerify'
->;
-
 export const EmailVerifyScreen = () => {
-  const navigation = useNavigation<LoginScreenNavigationProp>();
   const { user } = useContext(AuthContext);
   const { cancelEmailVerification } = useAuth();
   const {
@@ -49,11 +33,9 @@ export const EmailVerifyScreen = () => {
   } = useEmailVerifyViewModel();
 
   const handleButtonConfirm = async () => {
-    console.log(user);
     if (!user?.id) return;
     setIsLoading(true);
-    const result = await handleConfirm(user.id);
-    console.log(result);
+    await handleConfirm();
     setIsLoading(false);
   };
 
@@ -115,9 +97,7 @@ export const EmailVerifyScreen = () => {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity
             disabled={timecode > 0}
-            onPress={() =>
-              user && resendCode(user.email, user.name, user.lastname, user.id)
-            }
+            onPress={() => user && resendCode(user.email)}
             style={{ opacity: timecode > 0 ? 0.5 : 1 }}
           >
             <Text style={styles.link}>RESEND CODE</Text>
@@ -136,7 +116,7 @@ export const EmailVerifyScreen = () => {
           isLoading={isLoading}
           onPress={handleButtonConfirm}
         />
-        {error.success && <Text style={styles.error}>{error.message}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
       </View>
     </>
   );

@@ -1,38 +1,90 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+
 import { AuthContext } from './AuthContext';
 
-//* tipiado.
+import {
+  AuthService,
+  TokenService,
+  AuthEventService,
+} from '../../infrastructure';
+
 import type { AuthStatus, AuthTokens, User } from '../../domain';
 
-//import { AuthService } from '../services/AuthService'
-//import { useNavigation } from '@react-navigation/native'
-//import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-//import { RootStackParamList } from '../interfaces/NavigationModel'
-
 const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [status, setStatus] = useState<AuthStatus>('unauthenticated');
+  const [status, setStatus] = useState<AuthStatus>('checking');
+
   const [tokens, setTokens] = useState<AuthTokens | undefined>(undefined);
+
   const [user, setUser] = useState<User | undefined>(undefined);
 
-  useEffect(() => {
-    //AuthService.checkStatus()
+  const logoutLocal = useCallback(async () => {
+    await TokenService.clearTokens();
+
+    setUser(undefined);
+    setTokens(undefined);
+    setStatus('unauthenticated');
   }, []);
 
-  /*useEffect(() => {
-    if (status !== 'checking'){
-      if (status === 'authenticated'){
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'MainBottomTab'}]
-        })
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}]
-        })
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      const accessToken = await TokenService.getAccessToken();
+      const refreshToken = await TokenService.getRefreshToken();
+
+      if (!accessToken || !refreshToken) {
+        await logoutLocal();
+        return;
       }
+
+      const response = await AuthService.checkStatus();
+
+      if (!response.success || !response.data) {
+        await logoutLocal();
+        return;
+      }
+
+      const checkedUser = response.data;
+
+      const currentAccessToken = await TokenService.getAccessToken();
+      const currentRefreshToken = await TokenService.getRefreshToken();
+
+      if (!currentAccessToken || !currentRefreshToken) {
+        await logoutLocal();
+        return;
+      }
+
+      setUser(checkedUser);
+      setTokens({
+        access: currentAccessToken,
+        refresh: currentRefreshToken,
+      });
+
+      setStatus(
+        checkedUser.isEmailVerified
+          ? 'authenticated'
+          : 'needs-email-verification',
+      );
+    } catch (error) {
+      await logoutLocal();
     }
-  }, [status])*/
+  }, [logoutLocal]);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
+
+  useEffect(() => {
+    const unsubscribe = AuthEventService.subscribe(
+      'session-expired',
+      logoutLocal,
+    );
+
+    return unsubscribe;
+  }, [logoutLocal]);
 
   return (
     <AuthContext.Provider

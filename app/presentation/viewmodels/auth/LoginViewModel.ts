@@ -72,12 +72,7 @@ export const LoginViewModel = () => {
       const tokens = response.data.tokens;
 
       if (!user.isEmailVerified) {
-        await AuthService.sendEmailCode(
-          user.email,
-          user.name,
-          user.lastname,
-          user.id,
-        );
+        await AuthService.sendEmailCode();
 
         await requireEmailVerification(user, tokens);
 

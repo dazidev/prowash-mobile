@@ -1,17 +1,16 @@
 import axios from 'axios';
 
-import { api } from '../config/axios.config';
+import { api } from '../../config/axios.config';
 
-import { useContext } from 'react';
-import { AuthContext } from '../../presentation';
 import {
   ServiceResponse,
   UserLoginResponse,
   UserRegisterInterface,
-} from '../../domain';
+} from '../../../domain';
 import { DeviceService } from './device.service';
-import { type NestErrorResponse } from '../../domain/interfaces/auth/auth.interface';
-import { handleApiError, isNestErrorResponse } from '../../shared';
+import type { User } from '../../../domain/interfaces/auth/auth.interface';
+import { handleApiError } from '../../../shared';
+import { TokenService } from './token.service';
 
 export class AuthService {
   static async registerUser(user: UserRegisterInterface) {
@@ -29,31 +28,19 @@ export class AuthService {
       };
     }
   }
-  static async sendEmailCode(
-    email: string,
-    name: string,
-    lastname: string,
-    userId: string,
-  ) {
+  static async sendEmailCode(): Promise<ServiceResponse<undefined>> {
     try {
-      const jsonEmail = {
-        email: email,
-        name: name,
-        lastname: lastname,
-        userId: userId,
+      await api.post('/api/auth/send-email-code');
+      return {
+        success: true,
+        message: 'Code sent',
       };
-      const response = await api.post(
-        '/api/auth/register/verify-email',
-        jsonEmail,
-      );
-      return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         return error.response.data;
       }
       return {
         success: false,
-        error: 'NETWORK_ERROR',
         message: 'Unable to connect. Please try again later.',
       };
     }
@@ -76,26 +63,14 @@ export class AuthService {
       };
     }
   }
-  static async confirmCode(userId: string, code: string) {
+  static async confirmCode(code: string): Promise<ServiceResponse<undefined>> {
     try {
-      const jsonCode = {
-        userId: userId,
-        code: code,
-      };
-      const response = await api.post(
-        '/api/auth/register/verify-email-code',
-        jsonCode,
-      );
-      return response.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
+      await api.post('/api/auth/verify-email-code', { code });
       return {
-        success: false,
-        error: 'NETWORK_ERROR',
-        message: 'Unable to connect. Please try again later.',
+        success: true,
       };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 
@@ -134,16 +109,46 @@ export class AuthService {
     }
   }
 
-  static async checkStatus() {
+  static async refresh(): Promise<ServiceResponse<undefined>> {
+    const refreshToken = await TokenService.getRefreshToken();
+
+    if (!refreshToken) {
+      return {
+        success: false,
+        message: 'No refresh token found',
+      };
+    }
+
     try {
-      const response = await api.get('/api/auth/check-status');
+      const response = await api.post('/api/auth/refresh-mobile', {
+        refreshToken,
+      });
 
       return {
         success: true,
         data: response.data,
       };
-    } catch (error: unknown) {
-      return handleApiError(error);
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Session expired',
+      };
+    }
+  }
+
+  static async checkStatus(): Promise<ServiceResponse<User>> {
+    try {
+      const response = await api.get<User>('/api/auth/check-status');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Invalid session',
+      };
     }
   }
 }

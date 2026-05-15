@@ -1,19 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { TextInput } from 'react-native';
 import { AuthService } from '../../../infrastructure';
 
 //* tipiados.
-import { type TemplateCodeInterface } from '../../../domain';
-import { useAuth } from '../../hooks/auth/useAuth';
+import type { TemplateCodeInterface } from '../../../domain';
+import { AuthContext } from '../../context/AuthContext';
 
 export const useEmailVerifyViewModel = () => {
-  const { loginUser } = useAuth();
-
+  const { setStatus } = useContext(AuthContext);
   const [timecode, setTimecode] = useState<number>(0);
-  const [error, setError] = useState({
-    success: false,
-    message: '',
-  });
+  const [error, setError] = useState<string>('');
 
   const [code, setCode] = useState<TemplateCodeInterface>({
     param1: '',
@@ -55,12 +51,7 @@ export const useEmailVerifyViewModel = () => {
     }
   };
 
-  const resendCode = async (
-    email: string,
-    name: string,
-    lastname: string,
-    userId: string,
-  ) => {
+  const resendCode = async (email: string) => {
     const request = await AuthService.requestNewCode(email);
     const { success, error, time } = request;
     const timeInt = Math.floor(time);
@@ -68,48 +59,28 @@ export const useEmailVerifyViewModel = () => {
       setTimecode(timeInt);
     }
     if (success === true) {
-      await AuthService.sendEmailCode(email, name, lastname, userId);
+      await AuthService.sendEmailCode();
     }
   };
 
-  const handleConfirm = async (id: string): Promise<boolean> => {
+  const handleConfirm = async () => {
     const stringCode = `${code.param1}${code.param2}${code.param3}${code.param4}`;
     const numberCode = Number(stringCode);
 
     if (stringCode.length === 4 && 1000 <= numberCode && numberCode <= 9999) {
-      const response = await AuthService.confirmCode(id, stringCode);
+      const response = await AuthService.confirmCode(stringCode);
 
       if (response.success === false) {
-        if (response.error === 'CODE_NOT_FOUND') {
-          setError({
-            success: true,
-            message:
-              'The verification code you entered is invalid. Please try again.',
-          });
-          return false;
-        } else if (response.error === 'CODE_EXPIRED') {
-          setError({
-            success: true,
-            message:
-              'The verification code has expired. Please request a new one to continue.',
-          });
-          return false;
-        } else if (response.error === 'IS_EMAIL_VERIFIED_ERROR') {
-          setError({ success: true, message: 'Please contact to support.' });
-          return false;
-        } else return false;
-      } else {
-        await loginUser(response.data, response.tokens);
-
-        return true;
+        setError(`${response.message}`);
+        return;
       }
-    } else {
-      setError({
-        success: true,
-        message: 'Please enter the verification code to continue.',
-      });
-      return false;
+
+      setStatus('authenticated');
+      return;
     }
+
+    setError('Please enter the verification code to continue.');
+    return;
   };
 
   return {

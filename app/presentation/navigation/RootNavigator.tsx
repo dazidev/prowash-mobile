@@ -8,6 +8,7 @@ import { AuthContext } from '../context/AuthContext';
 
 //* tipiados.
 import type { AuthStackParamList } from '../../domain';
+import { LoadingScreen } from '../views/screens/auth/LoadingScreen';
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -30,6 +31,11 @@ const AuthNavigator = () => {
 
 const RootNavigator = () => {
   const { status } = useContext(AuthContext);
+
+  if (status === 'checking') {
+    return <LoadingScreen />;
+  }
+
   return (
     <Root.Navigator screenOptions={{ headerShown: false }}>
       {status === 'unauthenticated' && (
