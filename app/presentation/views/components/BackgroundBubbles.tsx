@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -11,101 +11,115 @@ interface BubbleProps {
   duration: number;
 }
 
-const AnimatedBubble: React.FC<BubbleProps> = ({
-  size,
-  left,
-  top,
-  delay,
-  duration,
-}) => {
-  const translateY = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0)).current;
+interface BubbleData extends BubbleProps {
+  id: number;
+}
 
-  useEffect(() => {
-    const animateBubble = () => {
-      // Reset values
-      translateY.setValue(0);
-      opacity.setValue(0);
-      scale.setValue(0);
+const AnimatedBubble = memo(
+  ({ size, left, top, delay, duration }: BubbleProps) => {
+    const translateY = useRef(new Animated.Value(0)).current;
+    const opacity = useRef(new Animated.Value(0)).current;
+    const scale = useRef(new Animated.Value(0)).current;
 
-      // Start animations
-      Animated.sequence([
-        // Fade in and scale up
-        Animated.parallel([
-          Animated.timing(opacity, {
-            toValue: 0.6,
-            duration: 1000,
-            delay,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scale, {
-            toValue: 1,
-            duration: 1000,
-            delay,
-            easing: Easing.out(Easing.back(1.2)),
-            useNativeDriver: true,
-          }),
-        ]),
-        // Float up and fade out
-        Animated.parallel([
-          Animated.timing(translateY, {
-            toValue: -height * 0.3,
-            duration,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: duration * 0.7,
-            delay: duration * 0.3,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start(() => {
-        // Restart animation
-        setTimeout(animateBubble, Math.random() * 2000);
-      });
-    };
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
 
-    const timeout = setTimeout(animateBubble, delay);
-    return () => clearTimeout(timeout);
-  }, [translateY, opacity, scale, delay, duration]);
+    useEffect(() => {
+      let isMounted = true;
+
+      const animateBubble = () => {
+        if (!isMounted) return;
+
+        translateY.setValue(0);
+        opacity.setValue(0);
+        scale.setValue(0);
+
+        animationRef.current = Animated.sequence([
+          Animated.parallel([
+            Animated.timing(opacity, {
+              toValue: 0.6,
+              duration: 1000,
+              delay,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scale, {
+              toValue: 1,
+              duration: 1000,
+              delay,
+              easing: Easing.out(Easing.back(1.2)),
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(translateY, {
+              toValue: -height * 0.3,
+              duration,
+              easing: Easing.out(Easing.quad),
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: duration * 0.7,
+              delay: duration * 0.3,
+              useNativeDriver: true,
+            }),
+          ]),
+        ]);
+
+        animationRef.current.start(() => {
+          if (!isMounted) return;
+
+          timeoutRef.current = setTimeout(animateBubble, Math.random() * 2000);
+        });
+      };
+
+      timeoutRef.current = setTimeout(animateBubble, delay);
+
+      return () => {
+        isMounted = false;
+
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+
+        animationRef.current?.stop();
+      };
+    }, [delay, duration, opacity, scale, translateY]);
+
+    return (
+      <Animated.View
+        style={[
+          styles.bubble,
+          {
+            width: size,
+            height: size,
+            left,
+            top,
+            transform: [{ translateY }, { scale }],
+            opacity,
+          },
+        ]}
+      />
+    );
+  },
+);
+
+const BackgroundBubbles = () => {
+  const bubbles = useRef<BubbleData[]>(
+    Array.from({ length: 15 }, (_, index) => ({
+      id: index,
+      size: Math.random() * 60 + 20,
+      left: Math.random() * (width - 80),
+      top: height * 0.3 + Math.random() * (height * 0.7),
+      delay: Math.random() * 3000,
+      duration: 3000 + Math.random() * 4000,
+    })),
+  ).current;
 
   return (
-    <Animated.View
-      style={[
-        styles.bubble,
-        {
-          width: size,
-          height: size,
-          left,
-          top,
-          transform: [{ translateY }, { scale }],
-          opacity,
-        },
-      ]}
-    />
-  );
-};
-
-const BackgroundBubbles: React.FC = () => {
-  // Generar burbujas con posiciones y tamaños aleatorios
-  const bubbles = Array.from({ length: 15 }, (_, index) => ({
-    id: index,
-    size: Math.random() * 60 + 20, // Entre 20 y 80
-    left: Math.random() * (width - 80),
-    top: height * 0.3 + Math.random() * (height * 0.7),
-    delay: Math.random() * 3000,
-    duration: 3000 + Math.random() * 4000, // Entre 3 y 7 segundos
-  }));
-
-  return (
-    <View style={styles.container}>
-      {/* Fondo con gradiente azul */}
+    <View style={styles.container} pointerEvents="none">
       <View style={styles.backgroundGradient} />
 
-      {/* Burbujas animadas */}
       {bubbles.map(bubble => (
         <AnimatedBubble
           key={bubble.id}
@@ -117,7 +131,6 @@ const BackgroundBubbles: React.FC = () => {
         />
       ))}
 
-      {/* Burbujas estáticas adicionales para más densidad */}
       <View style={[styles.staticBubble, styles.staticBubble1]} />
       <View style={[styles.staticBubble, styles.staticBubble2]} />
       <View style={[styles.staticBubble, styles.staticBubble3]} />
@@ -127,31 +140,24 @@ const BackgroundBubbles: React.FC = () => {
       <View style={[styles.staticBubble, styles.staticBubble7]} />
       <View style={[styles.staticBubble, styles.staticBubble8]} />
 
-      {/* Overlay sutil para mejorar la legibilidad */}
       <View style={styles.overlay} />
     </View>
   );
 };
 
+export default memo(BackgroundBubbles);
+
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
   },
   backgroundGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#0D47A1', // Azul profundo base
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0D47A1',
   },
   bubble: {
     position: 'absolute',
-    backgroundColor: 'rgba(135, 206, 250, 0.4)', // Azul claro semi-transparente
+    backgroundColor: 'rgba(135, 206, 250, 0.4)',
     borderRadius: 50,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -212,13 +218,7 @@ const styles = StyleSheet.create({
     left: width * 0.05,
   },
   overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(13, 71, 161, 0.1)', // Overlay azul muy sutil
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(13, 71, 161, 0.1)',
   },
 });
-
-export default BackgroundBubbles;
