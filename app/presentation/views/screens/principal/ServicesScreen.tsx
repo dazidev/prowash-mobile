@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import CleaningBackground from '../../components/CleaningBackground';
 import { ServiceCard } from '../../components/services/ServiceCard';
+import { CatalogService } from '../../../../infrastructure/services/catalog/catalog.service';
+import { PackageResponse } from '../../../../domain';
 export const ServicesScreen = () => {
   const [option, setOption] = useState();
+  const [data, setData] = useState<PackageResponse[]>();
+
+  useEffect(() => {
+    const loadPackages = async () => {
+      const packages = await CatalogService.getPackages();
+
+      if (packages.data) {
+        setData(packages.data);
+      }
+    };
+
+    loadPackages();
+  }, []);
 
   return (
     <>
@@ -12,7 +27,8 @@ export const ServicesScreen = () => {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        <ServiceCard />
+        {data &&
+          data.map(pack => <ServiceCard key={pack.id} packageInfo={pack} />)}
       </ScrollView>
     </>
   );

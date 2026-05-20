@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -8,118 +8,97 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
+import { PackageResponse } from '../../../../domain';
 
-interface Props {}
+interface Props {
+  packageInfo: PackageResponse;
+}
 
-export const ServiceCard = () => {
+export const ServiceCard = ({ packageInfo }: Props) => {
+  const [priceSelected, setPriceSelected] = useState<string>('');
+
+  useEffect(() => {
+    const idLowestPrice = packageInfo.prices.reduce((min, current) => {
+      return current.price < min.price ? current : min;
+    }).id;
+
+    setPriceSelected(idLowestPrice);
+  }, []);
+
+  const setPrice = (id: string) => {
+    setPriceSelected(id);
+  };
+
   return (
     <View>
       <View style={styles.titleContainer}>
-        <Text style={styles.cardTitle}>BASIC</Text>
+        <Text style={styles.cardTitle}>{packageInfo.name}</Text>
       </View>
       <View style={styles.cardContainer}>
         <View style={styles.rangesContainers}>
-          <Pressable style={styles.buttonRange}>
-            <Text style={{ textAlign: 'center' }}>
-              Up to 1000 <Text>ft²</Text>
-            </Text>
-          </Pressable>
-          <Pressable style={styles.buttonRange}>
-            <Text style={{ textAlign: 'center' }}>
-              Up to 2000 <Text>ft²</Text>
-            </Text>
-          </Pressable>
-          <Pressable style={styles.buttonRange}>
-            <Text style={{ textAlign: 'center' }}>
-              Up to 3000 <Text>ft²</Text>
-            </Text>
-          </Pressable>
+          {packageInfo.prices &&
+            packageInfo.prices.map(price => (
+              <Pressable
+                key={price.id}
+                style={styles.buttonRange}
+                onPress={() => setPrice(price.id)}
+              >
+                <Text
+                  style={[
+                    { textAlign: 'center' },
+                    priceSelected === price.id ? { fontWeight: 'bold' } : {},
+                  ]}
+                >
+                  Up to {price.name} <Text>ft²</Text>
+                </Text>
+              </Pressable>
+            ))}
         </View>
         <View style={{ marginVertical: 20, justifyContent: 'center' }}>
           <Text style={styles.serviceSubtitle}>
             USD{' '}
-            <Text
-              style={{
-                fontSize: 60,
-                fontWeight: 'bold',
-                color: 'black',
-              }}
-            >
-              800
-            </Text>{' '}
+            {packageInfo.prices
+              .filter(price => price.id === priceSelected)
+              .map(price => (
+                <Text
+                  key={price.id}
+                  style={{
+                    fontSize: 60,
+                    fontWeight: 'bold',
+                    color: 'black',
+                  }}
+                >
+                  {' '}
+                  {price.price}{' '}
+                </Text>
+              ))}
             / year
           </Text>
         </View>
         <View>
           <Text style={styles.serviceSubtitle}>SERVICES INCLUDED</Text>
-          <View style={styles.serviceContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <Ionicons
-                name={'checkmark-circle-outline'}
-                size={32}
-                color={colors.darkGreen}
-              />
-              <Text style={styles.serviceTitle}>HOUSE WASHING</Text>
+          {packageInfo.services.map(services => (
+            <View style={styles.serviceContainer}>
+              <View
+                key={services.id}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
+              >
+                <Ionicons
+                  name={'checkmark-circle-outline'}
+                  size={32}
+                  color={colors.darkGreen}
+                />
+                <Text style={styles.serviceTitle}>{services.name}</Text>
+              </View>
+              <Text style={styles.serviceFrequency}>
+                {services.amount} x year
+              </Text>
             </View>
-            <Text style={styles.serviceFrequency}>2 x year</Text>
-          </View>
-          <View style={styles.serviceContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <Ionicons
-                name={'checkmark-circle-outline'}
-                size={32}
-                color={colors.darkGreen}
-              />
-              <Text style={styles.serviceTitle}>HOUSE WASHING</Text>
-            </View>
-            <Text style={styles.serviceFrequency}>2 x year</Text>
-          </View>
-          <View style={styles.serviceContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <Ionicons
-                name={'checkmark-circle-outline'}
-                size={32}
-                color={colors.darkGreen}
-              />
-              <Text style={styles.serviceTitle}>HOUSE WASHING</Text>
-            </View>
-            <Text style={styles.serviceFrequency}>2 x year</Text>
-          </View>
-          <View style={styles.serviceContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <Ionicons
-                name={'checkmark-circle-outline'}
-                size={32}
-                color={colors.darkGreen}
-              />
-              <Text style={styles.serviceTitle}>HOUSE WASHING</Text>
-            </View>
-            <Text style={styles.serviceFrequency}>2 x year</Text>
-          </View>
+          ))}
         </View>
         <View>
           <TouchableOpacity style={styles.quoteButton}>

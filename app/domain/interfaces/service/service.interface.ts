@@ -9,3 +9,20 @@ export type ApiErrorResult = {
   message: string;
   statusCode?: number;
 };
+
+export interface PackageResponse {
+  id: string;
+  name: string;
+  services: {
+    id: string;
+    serviceId: string;
+    name: string;
+    amount: number;
+  }[];
+  prices: {
+    id: string;
+    price: number;
+    name: string;
+    unit: string;
+  }[];
+}
