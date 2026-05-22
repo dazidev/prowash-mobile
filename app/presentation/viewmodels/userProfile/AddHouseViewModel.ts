@@ -3,9 +3,9 @@ import { AuthContext } from '../../context/AuthContext';
 import { Asset } from 'react-native-image-picker';
 import { UserService } from '../../../infrastructure';
 import { getErrorUtil, ServerErrorCode } from '../../../shared';
+import { UserHouse } from '../../../domain';
 
 //* tipiados.
-import type { UserHouseResponse, UserHouseResponseItem } from '../../../domain';
 
 export const INITIAL_HOUSE_STATE = {
   houseName: '',
@@ -50,36 +50,32 @@ const AddHouseViewModel = () => {
     success: boolean;
     message?: string;
   }> => {
-    const house: UserHouseResponseItem = {
+    const house: UserHouse = {
       id: user?.id as string,
       name: fieldValue.houseName,
       street: fieldValue.street,
-      complement_street: fieldValue.complementStreet,
+      complementStreet: fieldValue.complementStreet,
       city: fieldValue.city,
       state: fieldValue.state,
       zipcode: fieldValue.zipcode,
     };
 
-    const response: UserHouseResponse = await UserService.addUserHouse(house);
+    const response = await UserService.addUserHouse(house);
 
     if (!response.success)
       return {
         success: false,
-        message: getErrorUtil(response.error as ServerErrorCode),
+        message: `${response.message}`,
       };
 
-    const { id } = await response.data;
+    const { id } = response.data!;
 
     if (photo) {
-      const imageResponse = await UserService.uploadHousePhoto(
-        photo,
-        id,
-        user?.id!,
-      );
+      const imageResponse = await UserService.uploadHousePhoto(photo, id);
       if (!imageResponse.success)
         return {
           success: false,
-          message: getErrorUtil(imageResponse.error as ServerErrorCode),
+          message: `${imageResponse.message}`,
         };
     }
 

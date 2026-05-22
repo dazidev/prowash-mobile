@@ -3,11 +3,8 @@ import { api } from '../config/axios.config';
 import { Asset } from 'react-native-image-picker';
 
 //* tipiado.
-import type {
-  UserBasicResponseInterface,
-  UserHouseResponseItem,
-  UserHousesResponse,
-} from '../../domain';
+import type { ServiceResponse, UserHouse } from '../../domain';
+import { handleApiError } from '../../shared';
 
 export class UserService {
   static async editPersonalInfo(id: string, name: string, lastname: string) {
@@ -38,7 +35,7 @@ export class UserService {
     currentPassword: string,
     newPassword: string,
     repeatNewPassword: string,
-  ): Promise<UserBasicResponseInterface> {
+  ): Promise<any> {
     try {
       const jsonInfo = {
         currentPassword: currentPassword,
@@ -61,73 +58,62 @@ export class UserService {
     }
   }
 
-  static async getUserHouses(id: string): Promise<UserHousesResponse> {
+  static async getUserHouses(): Promise<ServiceResponse<UserHouse[]>> {
     try {
-      const response = await api.get(`/api/user/houses/${id}`);
-      return response.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
+      const response = await api.get(`/api/user/houses`);
       return {
-        success: false,
-        error: 'NETWORK_ERROR',
+        success: true,
+        data: response.data,
       };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 
-  static async addUserHouse(house: UserHouseResponseItem) {
+  static async addUserHouse(
+    house: UserHouse,
+  ): Promise<ServiceResponse<UserHouse>> {
     try {
-      const { id, name, street, complement_street, city, state, zipcode } =
-        house;
+      const { name, street, complementStreet, city, state, zipcode } = house;
       const jsonInfo = {
         name,
         street,
-        complementStreet: complement_street,
+        complementStreet,
         city,
         state,
         zipcode,
       };
-      const response = await api.post(`/api/user/add/house/${id}`, jsonInfo);
-      return response.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
+      const response = await api.post(`/api/user/house`, jsonInfo);
       return {
-        success: false,
-        error: 'NETWORK_ERROR',
+        success: true,
+        data: response.data,
       };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 
   static async deleteUserHouse(
-    userId: string,
     houseId: string,
-  ): Promise<UserBasicResponseInterface> {
+  ): Promise<ServiceResponse<unknown>> {
     try {
-      const response = await api.delete(`/api/user/${userId}/house/${houseId}`);
-      return response.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
+      await api.delete(`/api/user/house/${houseId}`);
       return {
-        success: false,
-        error: 'NETWORK_ERROR',
+        success: true,
       };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 
   static async uploadHousePhoto(
     image: Asset,
     houseId: string,
-    userId: string,
-  ): Promise<any> {
+  ): Promise<ServiceResponse<unknown>> {
     // tipiar la respuesta
     // TODO: manejar las notificaciones de success o error a nivel global de la app
 
-    if (!image.uri || !image.fileSize || !image.type) return {};
+    if (!image.uri || !image.fileSize || !image.type) return { success: false };
 
     const ext = (image.fileName?.split('.').pop() ?? 'jpg').toLowerCase();
 
@@ -140,11 +126,9 @@ export class UserService {
     let signRes;
 
     try {
-      signRes = await api.post(`/api/user/${userId}/uploads/sign`, jsonInfo);
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response)
-        return error.response.data;
-      return { success: false, error: 'NETWORK_ERROR' };
+      signRes = await api.post(`/api/user/uploads-sign`, jsonInfo);
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
 
     const { uploadUrl, key } = signRes.data;
@@ -158,15 +142,15 @@ export class UserService {
     });
 
     try {
-      const attach = await api.post(
-        `/api/user/houses/${houseId}/photo/attach`,
-        { key },
-      );
-      return attach.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response)
-        return error.response.data;
-      return { success: false, error: 'NETWORK_ERROR' };
+      const attach = await api.post(`/api/user/house/${houseId}/photo-attach`, {
+        key,
+      });
+      return {
+        success: true,
+        data: attach.data,
+      };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 }

@@ -3,24 +3,21 @@ import { AuthContext } from '../../context/AuthContext';
 import { UserService } from '../../../infrastructure';
 
 //* tipiado.
-import type {
-  UserBasicResponseInterface,
-  UserHousesResponse,
-} from '../../../domain';
+import type { UserHouse } from '../../../domain';
 
 const ManageHousesViewModel = () => {
   const { user } = useContext(AuthContext);
-  const [houses, setHouses] = useState<UserHousesResponse>();
+  const [houses, setHouses] = useState<UserHouse[]>();
 
   const getHouses = async () => {
-    const houses = await UserService.getUserHouses(user?.id!);
-    setHouses(houses);
+    const houses = await UserService.getUserHouses();
+    if (houses.data) {
+      setHouses(houses.data);
+    }
   };
 
-  const deleteHouse = async (
-    houseId: string,
-  ): Promise<UserBasicResponseInterface> => {
-    const deleteHouse = await UserService.deleteUserHouse(user?.id!, houseId);
+  const deleteHouse = async (houseId: string) => {
+    const deleteHouse = await UserService.deleteUserHouse(houseId);
     return deleteHouse;
   };
 

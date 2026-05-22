@@ -19,10 +19,7 @@ import TopNotification, {
 import { colors } from '../../../theme/colors';
 
 //* tipiado.
-import type {
-  ProfileStackParamList,
-  UserHouseResponseItem,
-} from '../../../../domain';
+import type { ProfileStackParamList, UserHouse } from '../../../../domain';
 
 type NavigationProp = NativeStackNavigationProp<
   ProfileStackParamList,
@@ -42,7 +39,7 @@ export const ManageHousesScreen = () => {
   }, [navigation]);
 
   const handleAddHome = () => {
-    const count = houses?.data?.length ?? 0;
+    const count = houses!.length ?? 0;
     if (count < 3) return navigation.navigate('AddHouse');
     notifRef.current?.show('You can’t add more than 3 houses', 'error');
   };
@@ -67,7 +64,7 @@ export const ManageHousesScreen = () => {
   const onDeleteHouse = async (houseId: string) => {
     const response = await deleteHouse(houseId);
     if (!response.success)
-      return notifRef.current?.show(response?.error!, 'error');
+      return notifRef.current?.show(`${response.message}`, 'error');
     notifRef.current?.show('House deleted successfully', 'success');
     getHouses();
   };
@@ -87,7 +84,7 @@ export const ManageHousesScreen = () => {
 
         <View style={styles.titleContainer}>
           <Text style={styles.title}>My houses</Text>
-          {houses?.success && (
+          {houses && (
             <TouchableOpacity style={styles.addButtom} onPress={handleAddHome}>
               <Text style={styles.textButtom}>+ Add house</Text>
             </TouchableOpacity>
@@ -95,7 +92,7 @@ export const ManageHousesScreen = () => {
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.optionsContainer}>
-            {!houses?.success && (
+            {!houses && (
               <TouchableOpacity
                 style={[
                   styles.addButtom,
@@ -118,25 +115,25 @@ export const ManageHousesScreen = () => {
                 </Text>
               </TouchableOpacity>
             )}
-            {houses?.success && (
-              <FlatList<UserHouseResponseItem>
+            {houses && (
+              <FlatList<UserHouse>
                 style={{ width: '100%' }}
                 contentContainerStyle={{
                   width: '100%',
                   paddingHorizontal: '5%',
                 }}
-                data={houses?.data ?? []}
+                data={houses ?? []}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                   <HouseCard
                     name={item.name}
                     street={item.street}
-                    complementStreet={item.complement_street}
+                    complementStreet={item.complementStreet!}
                     city={item.city}
                     state={item.state}
                     zipcode={item.zipcode}
                     houseId={item.id}
-                    imageUrl={item.imageUrl}
+                    imageUrl={item.imageUrl!}
                     onDeleteHouse={() => handleDeleteHouse(item.id)}
                   />
                 )}

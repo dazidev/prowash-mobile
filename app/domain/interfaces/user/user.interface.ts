@@ -15,30 +15,16 @@ export interface UserEditInfoResponseInterface {
   };
 }
 
-export interface UserBasicResponseInterface {
-  success: boolean;
-  error?: string;
-}
-
-export interface UserHouseResponseItem {
+export interface UserHouse {
   id: string;
   name: string;
   street: string;
-  complement_street: string;
+  complementStreet: string | null;
   city: string;
   state: string;
   zipcode: string;
-  imageUrl?: string;
-}
-
-export interface UserHousesResponse {
-  success: boolean;
-  data?: UserHouseResponseItem[];
-  error?: string;
-}
-
-export interface UserHouseResponse {
-  success: boolean;
-  data: UserHouseResponseItem;
-  error?: string;
+  userId?: string;
+  imageUrl?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
