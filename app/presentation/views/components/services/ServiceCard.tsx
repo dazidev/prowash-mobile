@@ -30,7 +30,7 @@ export const ServiceCard = ({ packageInfo }: Props) => {
   };
 
   return (
-    <View>
+    <View style={{ marginBottom: 20 }}>
       <View style={styles.titleContainer}>
         <Text style={styles.cardTitle}>{packageInfo.name}</Text>
       </View>
@@ -78,9 +78,8 @@ export const ServiceCard = ({ packageInfo }: Props) => {
         <View>
           <Text style={styles.serviceSubtitle}>SERVICES INCLUDED</Text>
           {packageInfo.services.map(services => (
-            <View style={styles.serviceContainer}>
+            <View key={services.id} style={styles.serviceContainer}>
               <View
-                key={services.id}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -100,6 +99,9 @@ export const ServiceCard = ({ packageInfo }: Props) => {
             </View>
           ))}
         </View>
+        <Text style={{ textAlign: 'center', color: 'gray' }}>
+          * All prices shown are subject to change based on the final quote.
+        </Text>
         <View>
           <TouchableOpacity style={styles.quoteButton}>
             <Text
