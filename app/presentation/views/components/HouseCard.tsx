@@ -1,8 +1,16 @@
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import { View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../theme/colors';
 import { useMemo, useState } from 'react';
+
+type OptionCard = 'manage' | 'select';
 
 type Props = {
   name: string;
@@ -13,7 +21,10 @@ type Props = {
   zipcode: string;
   imageUrl?: string;
   houseId: string;
-  onDeleteHouse: () => Promise<void>;
+  option?: OptionCard;
+  onDeleteHouse?: () => Promise<void>;
+  handleSelectHouse?: (houseId: string) => void;
+  houseSelected?: string;
 };
 
 const HouseCard = ({
@@ -25,7 +36,10 @@ const HouseCard = ({
   zipcode,
   imageUrl,
   houseId,
+  option = 'manage',
   onDeleteHouse,
+  handleSelectHouse,
+  houseSelected,
 }: Props) => {
   const [useFallback, setUseFallback] = useState(false);
 
@@ -39,35 +53,58 @@ const HouseCard = ({
   const uri = useFallback || !primary ? fallback : primary;
 
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri }}
-          onError={() => setUseFallback(true)}
-          style={styles.image}
-        />
-        <View style={styles.iconsContainer}>
-          {/*TODO: IMPLEMENTAR EL EDITAR LA CASA*/}
-          <TouchableOpacity style={styles.icon}>
-            <Ionicons name={'create-outline'} size={28} color={'black'} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.icon}
-            onPress={() => void onDeleteHouse()}
-          >
-            <Ionicons name={'trash-outline'} size={28} color={'red'} />
-          </TouchableOpacity>
+    <View
+      style={[
+        styles.cardContainer,
+        option === 'select' ? { height: 'auto' } : {},
+      ]}
+    >
+      {option === 'manage' && (
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri }}
+            onError={() => setUseFallback(true)}
+            style={styles.image}
+          />
+
+          <View style={styles.iconsContainer}>
+            {/*TODO: IMPLEMENTAR EL EDITAR LA CASA*/}
+
+            <TouchableOpacity style={styles.icon}>
+              <Ionicons name={'create-outline'} size={28} color={'black'} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.icon}
+              onPress={() => void onDeleteHouse!()}
+            >
+              <Ionicons name={'trash-outline'} size={28} color={'red'} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.nameText}>{name}</Text>
-        <Text style={styles.infoText}>
-          {street} {complementStreet}
-        </Text>
-        <Text style={styles.infoText}>
-          {city}, {state} {zipcode}
-        </Text>
-      </View>
+      )}
+      <Pressable
+        disabled={option === 'manage' ? true : false}
+        onPress={() => handleSelectHouse!(houseId)}
+        style={
+          houseSelected === houseId
+            ? {
+                borderColor: colors.darkGreen,
+                borderWidth: 3,
+                borderRadius: 15,
+              }
+            : {}
+        }
+      >
+        <View style={styles.infoContainer}>
+          <Text style={styles.nameText}>{name}</Text>
+          <Text style={styles.infoText}>
+            {street} {complementStreet}
+          </Text>
+          <Text style={styles.infoText}>
+            {city}, {state} {zipcode}
+          </Text>
+        </View>
+      </Pressable>
     </View>
   );
 };

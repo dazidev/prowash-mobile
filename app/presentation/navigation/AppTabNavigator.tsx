@@ -21,6 +21,9 @@ import type {
   ProfileStackParamList,
   ServicesStackParamList,
 } from '../../domain';
+import { SelectHomeScreen } from '../views/screens/principal/order/SelectHomeScreen';
+import { MembershipScreen } from '../views/screens/principal/membership/MembershipScreen';
+import { QuotesScreen } from '../views/screens/principal/membership/QuotesScreen';
 
 const Tab = createBottomTabNavigator<AppParamList>();
 const Home = createNativeStackNavigator<HomeStackParamList>();
@@ -39,6 +42,7 @@ const ServicesNavigator = () => {
   return (
     <Services.Navigator screenOptions={{ headerShown: false }}>
       <Services.Screen name="Services" component={ServicesScreen} />
+      <Services.Screen name="SelectHouse" component={SelectHomeScreen} />
     </Services.Navigator>
   );
 };
@@ -64,6 +68,8 @@ const ProfileNavigator = () => {
         />
         <Profile.Screen name="ManageHouses" component={ManageHousesScreen} />
         <Profile.Screen name="AddHouse" component={AddHouseScreen} />
+        <Profile.Screen name="MembershipHome" component={MembershipScreen} />
+        <Profile.Screen name="Quotes" component={QuotesScreen} />
       </Profile.Navigator>
     </ActionSheetProvider>
   );

@@ -28,3 +28,28 @@ export interface UserHouse {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export type ServiceInPackageOrder = {
+  name: string;
+  quantity: number;
+};
+
+type PackageOrderPurchaseStatus =
+  | 'PENDING_REVIEW'
+  | 'ASSIGNED_APPOINTMENT'
+  | 'QUOTED'
+  | 'PAID'
+  | 'CANCELLED';
+
+export interface UserQuote {
+  id: string;
+  name: string;
+  initialPrice: number;
+  finalPrice: number | null;
+  range: number;
+  purchaseStatus: PackageOrderPurchaseStatus;
+  services: ServiceInPackageOrder;
+  createdAt: Date;
+  updatedAt: Date;
+  userHouse: UserHouse;
+}

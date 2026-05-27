@@ -1,3 +1,5 @@
+import { PackageInfo } from '../service/service.interface';
+
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
@@ -17,6 +19,7 @@ export type HomeStackParamList = {
 
 export type ServicesStackParamList = {
   Services: undefined;
+  SelectHouse: { packageInfo: PackageInfo };
 };
 
 export type ProfileStackParamList = {
@@ -27,6 +30,9 @@ export type ProfileStackParamList = {
   TermsConditions: undefined;
   ManageHouses: undefined;
   AddHouse: undefined;
+  //* membership
+  MembershipHome: undefined;
+  Quotes: undefined;
 };
 
 export type AppParamList = {

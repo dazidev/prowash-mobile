@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { colors } from '../../../theme/colors';
-import { CarouselComponent } from '../ common/Carousel';
+import { CarouselComponent } from '../common/Carousel';
 
 type ImageObj = {
   image1: string | null;

@@ -25,6 +25,8 @@ export const UserProfileViewModel = () => {
     switch (option) {
       case 1:
         return 'EditProfile';
+      case 2:
+        return 'MembershipHome';
       case 3:
         return 'ManageHouses';
       case 4:

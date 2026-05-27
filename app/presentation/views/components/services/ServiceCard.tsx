@@ -8,13 +8,14 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
-import { PackageResponse } from '../../../../domain';
+import { PackageInfo, PackageResponse } from '../../../../domain';
 
 interface Props {
   packageInfo: PackageResponse;
+  onSelectPackage: (packageSelected: PackageInfo) => void;
 }
 
-export const ServiceCard = ({ packageInfo }: Props) => {
+export const ServiceCard = ({ packageInfo, onSelectPackage }: Props) => {
   const [priceSelected, setPriceSelected] = useState<string>('');
 
   useEffect(() => {
@@ -27,6 +28,22 @@ export const ServiceCard = ({ packageInfo }: Props) => {
 
   const setPrice = (id: string) => {
     setPriceSelected(id);
+  };
+
+  const handleSelectPackage = (packageInfo: PackageResponse) => {
+    const itemSelected = packageInfo.prices.find(
+      price => price.id === priceSelected,
+    );
+
+    if (itemSelected) {
+      const packageSelected = {
+        packageId: packageInfo.id,
+        initialPrice: +itemSelected.price,
+        range: +itemSelected.name,
+      };
+
+      onSelectPackage(packageSelected);
+    }
   };
 
   return (
@@ -103,7 +120,10 @@ export const ServiceCard = ({ packageInfo }: Props) => {
           * All prices shown are subject to change based on the final quote.
         </Text>
         <View>
-          <TouchableOpacity style={styles.quoteButton}>
+          <TouchableOpacity
+            style={styles.quoteButton}
+            onPress={() => handleSelectPackage(packageInfo)}
+          >
             <Text
               style={{
                 textAlign: 'center',

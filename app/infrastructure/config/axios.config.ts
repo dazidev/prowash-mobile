@@ -5,9 +5,7 @@ import { TokenService } from '../services/auth/token.service';
 import { AuthEventService } from '../services/auth/auth-event.service';
 
 const HOST_NAME =
-  Platform.OS === 'android'
-    ? 'http://10.0.2.2:3000'
-    : 'http://192.168.100.44:3000';
+  Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
 
 export const api = axios.create({
   baseURL: HOST_NAME,

@@ -26,3 +26,9 @@ export interface PackageResponse {
     unit: string;
   }[];
 }
+
+export interface PackageInfo {
+  packageId: string;
+  initialPrice: number;
+  range: number;
+}

@@ -9,10 +9,18 @@ import {
 import CleaningBackground from '../../components/CleaningBackground';
 import { ServiceCard } from '../../components/services/ServiceCard';
 import { CatalogService } from '../../../../infrastructure/services/catalog/catalog.service';
-import { PackageResponse } from '../../../../domain';
+import {
+  PackageInfo,
+  PackageResponse,
+  ServicesStackParamList,
+} from '../../../../domain';
 import { colors } from '../../../theme/colors';
 import { useFocusEffect } from '@react-navigation/native';
-export const ServicesScreen = () => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+type Props = NativeStackScreenProps<ServicesStackParamList, 'Services'>;
+
+export const ServicesScreen = ({ navigation }: Props) => {
   const [option, setOption] = useState<'packages' | 'services'>('packages');
   const [data, setData] = useState<PackageResponse[]>();
 
@@ -29,6 +37,10 @@ export const ServicesScreen = () => {
       loadPackages();
     }, []),
   );
+
+  const handleSelectPackage = (packageInfo: PackageInfo) => {
+    navigation.navigate('SelectHouse', { packageInfo });
+  };
 
   return (
     <>
@@ -76,7 +88,13 @@ export const ServicesScreen = () => {
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {data &&
-          data.map(pack => <ServiceCard key={pack.id} packageInfo={pack} />)}
+          data.map(pack => (
+            <ServiceCard
+              key={pack.id}
+              packageInfo={pack}
+              onSelectPackage={handleSelectPackage}
+            />
+          ))}
       </ScrollView>
     </>
   );
