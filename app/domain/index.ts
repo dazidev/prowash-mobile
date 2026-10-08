@@ -5,3 +5,4 @@ export * from './interfaces/navegation/navigation.interface';
 export * from './interfaces/validations/validations.interface';
 export * from './interfaces/advertising/advertising.interface';
 export * from './config/regular-exp.config';
+export * from './interfaces/push/push-device.interface';

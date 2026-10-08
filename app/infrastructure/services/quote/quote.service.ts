@@ -1,4 +1,10 @@
-import { PackageInfo, ServiceResponse, UserQuote } from '../../../domain';
+import {
+  PackageInfo,
+  RespondUserQuotePayload,
+  ServiceResponse,
+  UserQuote,
+  UserQuoteResponseUpdated,
+} from '../../../domain';
 import { handleApiError } from '../../../shared';
 import { api } from '../../config/axios.config';
 
@@ -29,6 +35,25 @@ export class QuoteService {
       return {
         success: true,
         data: quote.data,
+      };
+    } catch (error: unknown) {
+      return handleApiError(error);
+    }
+  }
+
+  static async respondToQuote(
+    quoteId: string,
+    payload: RespondUserQuotePayload,
+  ): Promise<ServiceResponse<UserQuoteResponseUpdated>> {
+    try {
+      const response = await api.patch<UserQuoteResponseUpdated>(
+        `/api/user/quotes/${quoteId}/response`,
+        payload,
+      );
+
+      return {
+        success: true,
+        data: response.data,
       };
     } catch (error: unknown) {
       return handleApiError(error);

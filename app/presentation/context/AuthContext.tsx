@@ -10,6 +10,7 @@ export interface AuthState {
   setStatus: (status: AuthStatus) => void;
   setTokens: (tokens: AuthTokens | undefined) => void;
   setUser: (user: User | undefined) => void;
+  logoutUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthState>({
@@ -19,4 +20,5 @@ export const AuthContext = createContext<AuthState>({
   setStatus: () => {},
   setTokens: () => {},
   setUser: () => {},
+  logoutUser: async () => {},
 });

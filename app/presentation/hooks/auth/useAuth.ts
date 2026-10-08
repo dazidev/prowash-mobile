@@ -1,11 +1,11 @@
 import { useCallback, useContext } from 'react';
 
 import { AuthContext } from '../../../presentation';
-import { AuthService, TokenService } from '../../../infrastructure';
+import { TokenService } from '../../../infrastructure';
 import type { AuthTokens, User } from '../../../domain';
 
 export function useAuth() {
-  const { setStatus, setTokens, setUser } = useContext(AuthContext);
+  const { setStatus, setTokens, setUser, logoutUser } = useContext(AuthContext);
 
   const loginUser = useCallback(
     async (user: User, tokens: AuthTokens) => {
@@ -30,22 +30,8 @@ export function useAuth() {
   );
 
   const cancelEmailVerification = useCallback(async () => {
-    try {
-      const refreshToken = await TokenService.getRefreshToken();
-
-      if (refreshToken) {
-        await AuthService.logout(refreshToken);
-      }
-    } catch (error) {
-      console.log('Error cancelling email verification session', error);
-    } finally {
-      await TokenService.clearTokens();
-
-      setUser(undefined);
-      setTokens(undefined);
-      setStatus('unauthenticated');
-    }
-  }, [setStatus, setTokens, setUser]);
+    await logoutUser();
+  }, [logoutUser]);
 
   return {
     loginUser,

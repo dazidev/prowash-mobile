@@ -34,9 +34,10 @@ export type ServiceInPackageOrder = {
   quantity: number;
 };
 
-type PackageOrderPurchaseStatus =
+export type PackageOrderPurchaseStatus =
   | 'PENDING_REVIEW'
   | 'ASSIGNED_APPOINTMENT'
+  | 'APPOINTMENT_RESCHEDULE_REQUESTED'
   | 'QUOTED'
   | 'PAID'
   | 'CANCELLED';
@@ -48,8 +49,35 @@ export interface UserQuote {
   finalPrice: number | null;
   range: number;
   purchaseStatus: PackageOrderPurchaseStatus;
-  services: ServiceInPackageOrder;
-  createdAt: Date;
-  updatedAt: Date;
+
+  appointmentAt: string | null;
+  appointmentTimeZone: string | null;
+  appointmentAcceptedAt: string | null;
+  appointmentVersion: number;
+
+  services: ServiceInPackageOrder[];
+  createdAt: string;
+  updatedAt: string;
   userHouse: UserHouse;
 }
+
+export type UserQuoteResponseAction =
+  | 'ACCEPT_APPOINTMENT'
+  | 'REQUEST_RESCHEDULE'
+  | 'CANCEL_QUOTE';
+
+export interface RespondUserQuotePayload {
+  action: UserQuoteResponseAction;
+  expectedAppointmentVersion: number;
+}
+
+export type UserQuoteResponseUpdated = Pick<
+  UserQuote,
+  | 'id'
+  | 'purchaseStatus'
+  | 'appointmentAt'
+  | 'appointmentTimeZone'
+  | 'appointmentAcceptedAt'
+  | 'appointmentVersion'
+  | 'updatedAt'
+>;
