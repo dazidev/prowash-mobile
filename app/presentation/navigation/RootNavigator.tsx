@@ -7,14 +7,8 @@ import AppTabNavigator from './AppTabNavigator';
 import { AuthContext } from '../context/AuthContext';
 
 //* tipiados.
-import type { AuthStackParamList } from '../../domain';
+import type { AuthStackParamList, RootStackParamList } from '../../domain';
 import { LoadingScreen } from '../views/screens/auth/LoadingScreen';
-
-export type RootStackParamList = {
-  Auth: undefined;
-  App: undefined;
-  EmailVerify: undefined;
-};
 
 const Root = createNativeStackNavigator<RootStackParamList>();
 const Auth = createNativeStackNavigator<AuthStackParamList>();

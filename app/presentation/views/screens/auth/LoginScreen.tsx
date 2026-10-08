@@ -12,7 +12,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { LoginViewModel } from '../../../viewmodels/auth/LoginViewModel';
-import { RootStackParamList } from '../../../../domain/interfaces/navegation/navigation.interface';
+import type { AuthStackParamList } from '../../../../domain';
 
 //* componentes
 import { InputPass } from '../../components/auth/InputPass';
@@ -25,7 +25,7 @@ import BackgroundBubbles from '../../components/BackgroundBubbles';
 // TODO: POSTING y LOWERCASE
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
+  AuthStackParamList,
   'Login'
 >;
 

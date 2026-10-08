@@ -1,5 +1,12 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -9,6 +16,7 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  AppState,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -21,8 +29,16 @@ import type {
 import { QuoteService } from '../../../../../infrastructure';
 import CleaningBackground from '../../../components/CleaningBackground';
 import { colors } from '../../../../theme/colors';
+import { AuthContext } from '../../../../context/AuthContext';
+import { useQuotePush } from '../../../../context/QuotePushProvider';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Quotes'>;
+
+type QuotesContentProps = {
+  targetQuoteId?: string;
+  targetEventId?: string;
+  onNotificationQuoteReady?: () => void;
+};
 
 const quoteStatuses: Record<
   PackageOrderPurchaseStatus,
@@ -77,20 +93,44 @@ function formatAppointment(date: string): string {
   }
 }
 
-export const QuotesContent = () => {
+export const QuotesContent = ({
+  targetQuoteId,
+  targetEventId,
+  onNotificationQuoteReady,
+}: QuotesContentProps) => {
+  const { user } = useContext(AuthContext);
+  const { latestEvent } = useQuotePush();
+
   const [quotes, setQuotes] = useState<UserQuote[] | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
 
+  const [loadedTargetKey, setLoadedTargetKey] = useState<string | null>(null);
+
   const activeRef = useRef(false);
   const submittingRef = useRef(false);
   const loadVersionRef = useRef(0);
+  const lastScrolledTargetRef = useRef<string | null>(null);
+
+  const targetRequestKey = targetQuoteId
+    ? `${targetEventId ?? 'quote'}:${targetQuoteId}`
+    : null;
+
+  const targetRequestKeyRef = useRef(targetRequestKey);
+
+  useLayoutEffect(() => {
+    targetRequestKeyRef.current = targetRequestKey;
+  }, [targetRequestKey]);
+
+  const latestOwnedEventId =
+    latestEvent?.userId === user?.id ? latestEvent?.eventId : undefined;
 
   const loadQuotes = useCallback(async () => {
-    if (!activeRef.current) return;
+    if (!activeRef.current || submittingRef.current) return;
 
     const loadVersion = ++loadVersionRef.current;
+    const requestedTargetKey = targetRequestKeyRef.current;
 
     setIsLoading(true);
     setError('');
@@ -108,6 +148,7 @@ export const QuotesContent = () => {
       }
 
       setQuotes(response.data);
+      setLoadedTargetKey(requestedTargetKey);
     } catch {
       if (activeRef.current && loadVersion === loadVersionRef.current) {
         setError('Unable to load your quotes.');
@@ -128,12 +169,76 @@ export const QuotesContent = () => {
         void loadQuotes();
       }
 
+      const subscription = AppState.addEventListener('change', nextState => {
+        if (
+          nextState === 'active' &&
+          activeRef.current &&
+          !submittingRef.current
+        ) {
+          void loadQuotes();
+        }
+      });
+
       return () => {
         activeRef.current = false;
         loadVersionRef.current += 1;
+        subscription.remove();
       };
-    }, [loadQuotes]),
+    }, [loadQuotes, targetRequestKey, latestOwnedEventId]),
   );
+
+  const targetWasLoaded =
+    targetRequestKey !== null && loadedTargetKey === targetRequestKey;
+
+  const hasTargetQuote =
+    !!targetQuoteId &&
+    (quotes?.some(quote => quote.id === targetQuoteId) ?? false);
+
+  const highlightedQuoteId =
+    targetWasLoaded && hasTargetQuote ? targetQuoteId : undefined;
+
+  const orderedQuotes =
+    quotes && highlightedQuoteId
+      ? [
+          ...quotes.filter(quote => quote.id === highlightedQuoteId),
+          ...quotes.filter(quote => quote.id !== highlightedQuoteId),
+        ]
+      : quotes;
+
+  const targetUnavailable =
+    targetWasLoaded && !isLoading && !error && !hasTargetQuote;
+
+  useEffect(() => {
+    if (
+      !targetRequestKey ||
+      !targetWasLoaded ||
+      !hasTargetQuote ||
+      isLoading ||
+      pendingId !== null ||
+      error ||
+      !onNotificationQuoteReady ||
+      lastScrolledTargetRef.current === targetRequestKey
+    ) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      if (!activeRef.current) return;
+
+      onNotificationQuoteReady();
+      lastScrolledTargetRef.current = targetRequestKey;
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [
+    targetRequestKey,
+    targetWasLoaded,
+    hasTargetQuote,
+    isLoading,
+    pendingId,
+    error,
+    onNotificationQuoteReady,
+  ]);
 
   const respondToQuote = async (
     quote: UserQuote,
@@ -248,8 +353,15 @@ export const QuotesContent = () => {
           </Text>
         )}
 
-        {quotes?.map(quote => {
+        {targetUnavailable && (
+          <Text style={styles.notificationMessage}>
+            The quote linked to this notification is no longer available.
+          </Text>
+        )}
+
+        {orderedQuotes?.map(quote => {
           const status = quoteStatuses[quote.purchaseStatus];
+          const isNotificationQuote = quote.id === highlightedQuoteId;
 
           const hasAppointment =
             !!quote.appointmentAt && !!quote.appointmentTimeZone;
@@ -275,8 +387,19 @@ export const QuotesContent = () => {
               : status.label;
 
           return (
-            <View key={quote.id} style={styles.cardContainer}>
+            <View
+              key={quote.id}
+              style={[
+                styles.cardContainer,
+                isNotificationQuote && styles.notificationCard,
+              ]}
+            >
               <View style={styles.infoContainer}>
+                {isNotificationQuote && (
+                  <Text style={styles.notificationLabel}>
+                    Opened from notification
+                  </Text>
+                )}
                 <Text style={styles.nameText}>{quote.userHouse.name}</Text>
 
                 <Text style={styles.infoText}>
@@ -405,12 +528,25 @@ export const QuotesContent = () => {
   );
 };
 
-export const QuotesScreen = ({ navigation }: Props) => {
+export const QuotesScreen = ({ navigation, route }: Props) => {
+  const scrollRef = useRef<ScrollView>(null);
+  const [quotesSectionY, setQuotesSectionY] = useState<number | null>(null);
+
+  const scrollToQuotes = useCallback(() => {
+    if (quotesSectionY === null) return;
+
+    scrollRef.current?.scrollTo({
+      y: Math.max(0, quotesSectionY - 12),
+      animated: true,
+    });
+  }, [quotesSectionY]);
+
   return (
     <>
       <CleaningBackground />
 
       <ScrollView
+        ref={scrollRef}
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
       >
@@ -422,7 +558,19 @@ export const QuotesScreen = ({ navigation }: Props) => {
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
 
-        <QuotesContent />
+        <View
+          onLayout={event => {
+            setQuotesSectionY(event.nativeEvent.layout.y);
+          }}
+        >
+          <QuotesContent
+            targetQuoteId={route.params?.quoteId}
+            targetEventId={route.params?.eventId}
+            onNotificationQuoteReady={
+              quotesSectionY === null ? undefined : scrollToQuotes
+            }
+          />
+        </View>
       </ScrollView>
     </>
   );
@@ -565,5 +713,21 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.5,
+  },
+  notificationCard: {
+    borderWidth: 2,
+    borderColor: colors.principalBlue,
+  },
+  notificationLabel: {
+    color: colors.principalBlue,
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  notificationMessage: {
+    color: '#92400e',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 15,
   },
 });

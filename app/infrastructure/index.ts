@@ -9,3 +9,4 @@ export * from './services/auth/auth-event.service';
 export * from './services/adv.service';
 export * from './services/quote/quote.service';
 export * from './services/push/push-notification.service';
+export * from './services/push/quote-push-event.service';

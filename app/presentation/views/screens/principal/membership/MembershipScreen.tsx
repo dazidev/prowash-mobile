@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -15,12 +15,25 @@ import { QuotesContent } from './QuotesScreen';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'MembershipHome'>;
 
-export const MembershipScreen = ({ navigation }: Props) => {
+export const MembershipScreen = ({ navigation, route }: Props) => {
+  const scrollRef = useRef<ScrollView>(null);
+  const [quotesSectionY, setQuotesSectionY] = useState<number | null>(null);
+
+  const scrollToQuotes = useCallback(() => {
+    if (quotesSectionY === null) return;
+
+    scrollRef.current?.scrollTo({
+      y: Math.max(0, quotesSectionY - 12),
+      animated: true,
+    });
+  }, [quotesSectionY]);
+
   return (
     <>
       <CleaningBackground />
 
       <ScrollView
+        ref={scrollRef}
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
       >
@@ -42,7 +55,19 @@ export const MembershipScreen = ({ navigation }: Props) => {
           </Text>
         </View>
 
-        <QuotesContent />
+        <View
+          onLayout={event => {
+            setQuotesSectionY(event.nativeEvent.layout.y);
+          }}
+        >
+          <QuotesContent
+            targetQuoteId={route.params?.quoteId}
+            targetEventId={route.params?.eventId}
+            onNotificationQuoteReady={
+              quotesSectionY === null ? undefined : scrollToQuotes
+            }
+          />
+        </View>
       </ScrollView>
     </>
   );

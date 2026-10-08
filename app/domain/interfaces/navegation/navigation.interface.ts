@@ -1,11 +1,5 @@
-import { PackageInfo } from '../service/service.interface';
-
-export type RootStackParamList = {
-  Login: undefined;
-  Register: undefined;
-  EmailVerify: undefined;
-  MainBottomTab: undefined;
-};
+import type { NavigatorScreenParams } from '@react-navigation/native';
+import type { PackageInfo } from '../service/service.interface';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -22,6 +16,11 @@ export type ServicesStackParamList = {
   SelectHouse: { packageInfo: PackageInfo };
 };
 
+export type QuoteNavigationParams = {
+  quoteId?: string;
+  eventId?: string;
+};
+
 export type ProfileStackParamList = {
   ProfileHome: undefined;
   EditProfile: undefined;
@@ -30,13 +29,18 @@ export type ProfileStackParamList = {
   TermsConditions: undefined;
   ManageHouses: undefined;
   AddHouse: undefined;
-  //* membership
-  MembershipHome: undefined;
-  Quotes: undefined;
+  MembershipHome: QuoteNavigationParams | undefined;
+  Quotes: QuoteNavigationParams | undefined;
 };
 
 export type AppParamList = {
-  HomeTab: undefined;
-  ProfileTab: undefined;
-  ServicesTab: undefined;
+  HomeTab: NavigatorScreenParams<HomeStackParamList> | undefined;
+  ProfileTab: NavigatorScreenParams<ProfileStackParamList> | undefined;
+  ServicesTab: NavigatorScreenParams<ServicesStackParamList> | undefined;
+};
+
+export type RootStackParamList = {
+  Auth: undefined;
+  App: NavigatorScreenParams<AppParamList> | undefined;
+  EmailVerify: undefined;
 };

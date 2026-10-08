@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">prowash_app_mobile</string>
+    <string name="quote_notification_channel_id" translatable="false">prowash_quotes</string>
+    <string name="quote_notification_channel_name">Quotes and appointments</string>
+    <string name="quote_notification_channel_description">Appointment dates and final quote updates.</string>
 </resources>
