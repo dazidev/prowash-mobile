@@ -1,6 +1,7 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { Platform } from 'react-native';
+
+import type { RefreshMobileResponse } from '../../domain';
 import { TokenService } from '../services/auth/token.service';
 import { AuthEventService } from '../services/auth/auth-event.service';
 
@@ -13,35 +14,84 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+function isSessionEndpoint(url?: string) {
+  const pathname = (url ?? '').split('?')[0];
+
+  return [
+    '/api/auth/login-mobile',
+    '/api/auth/refresh-mobile',
+    '/api/auth/logout-mobile',
+  ].some(endpoint => pathname.endsWith(endpoint));
+}
+
 api.interceptors.request.use(async config => {
+  if (isSessionEndpoint(config.url)) return config;
+
   const accessToken = await TokenService.getAccessToken();
 
   if (accessToken) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
   return config;
 });
 
-let isRefreshing = false;
+let refreshPromise: Promise<RefreshMobileResponse> | null = null;
 
-let failedQueue: {
-  resolve: (token: string) => void;
-  reject: (error: unknown) => void;
-}[] = [];
+export function refreshMobileSession(): Promise<RefreshMobileResponse> {
+  if (refreshPromise) return refreshPromise;
 
-const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach(prom => {
-    if (error) {
-      prom.reject(error);
-    } else if (token) {
-      prom.resolve(token);
+  refreshPromise = (async () => {
+    try {
+      const refreshToken = await TokenService.getRefreshToken();
+
+      if (!refreshToken) {
+        throw new Error('No refresh token found');
+      }
+
+      const { data } = await axios.post<RefreshMobileResponse>(
+        `${HOST_NAME}/api/auth/refresh-mobile`,
+        { refreshToken },
+        { timeout: 5000 },
+      );
+
+      if (
+        !data ||
+        typeof data.accessToken !== 'string' ||
+        !data.accessToken ||
+        typeof data.refreshToken !== 'string' ||
+        !data.refreshToken ||
+        data.refreshToken === refreshToken ||
+        typeof data.accessTokenExpiresIn !== 'number' ||
+        !Number.isFinite(data.accessTokenExpiresIn) ||
+        data.accessTokenExpiresIn <= 0 ||
+        typeof data.refreshTokenExpiresIn !== 'number' ||
+        !Number.isFinite(data.refreshTokenExpiresIn) ||
+        data.refreshTokenExpiresIn <= 0
+      ) {
+        throw new Error('Invalid refresh response');
+      }
+
+      await TokenService.saveTokens(data.accessToken, data.refreshToken);
+
+      return data;
+    } catch (error: unknown) {
+      try {
+        await TokenService.clearTokens();
+      } catch {
+        console.warn('Unable to clear stored authentication tokens.');
+      }
+
+      AuthEventService.emit('session-expired');
+
+      throw error;
     }
+  })().finally(() => {
+    refreshPromise = null;
   });
 
-  failedQueue = [];
-};
+  return refreshPromise;
+}
 
 api.interceptors.response.use(
   response => response,
@@ -50,70 +100,39 @@ api.interceptors.response.use(
       | (InternalAxiosRequestConfig & { _retry?: boolean })
       | undefined;
 
-    if (!originalRequest) {
-      return Promise.reject(error);
-    }
-
-    const isUnauthorized = error.response?.status === 401;
-
-    if (!isUnauthorized || originalRequest._retry) {
+    if (
+      !originalRequest ||
+      error.response?.status !== 401 ||
+      originalRequest._retry ||
+      isSessionEndpoint(originalRequest.url)
+    ) {
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
 
-    if (isRefreshing) {
-      return new Promise((resolve, reject) => {
-        failedQueue.push({
-          resolve: token => {
-            originalRequest.headers = originalRequest.headers ?? {};
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(api(originalRequest));
-          },
-          reject,
-        });
-      });
-    }
+    const currentAccessToken = await TokenService.getAccessToken();
+    const sentAuthorization = originalRequest.headers.get('Authorization');
 
-    isRefreshing = true;
-
-    try {
-      const refreshToken = await TokenService.getRefreshToken();
-
-      if (!refreshToken) {
-        await TokenService.clearTokens();
-        AuthEventService.emit('session-expired');
-        return Promise.reject(error);
-      }
-
-      const response = await axios.post(
-        `${HOST_NAME}/api/auth/refresh-mobile`,
-        {
-          refreshToken,
-        },
+    if (
+      currentAccessToken &&
+      sentAuthorization !== `Bearer ${currentAccessToken}`
+    ) {
+      originalRequest.headers.set(
+        'Authorization',
+        `Bearer ${currentAccessToken}`,
       );
 
-      const newAccessToken = response.data.tokens.access;
-      const newRefreshToken = response.data.tokens.refresh;
-
-      await TokenService.saveTokens(newAccessToken, newRefreshToken);
-
-      originalRequest.headers = originalRequest.headers ?? {};
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-      processQueue(null, newAccessToken);
-
       return api(originalRequest);
-    } catch (refreshError) {
-      processQueue(refreshError, null);
-
-      await TokenService.clearTokens();
-
-      AuthEventService.emit('session-expired');
-
-      return Promise.reject(refreshError);
-    } finally {
-      isRefreshing = false;
     }
+
+    const refreshed = await refreshMobileSession();
+
+    originalRequest.headers.set(
+      'Authorization',
+      `Bearer ${refreshed.accessToken}`,
+    );
+
+    return api(originalRequest);
   },
 );

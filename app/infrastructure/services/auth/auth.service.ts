@@ -1,16 +1,16 @@
 import axios from 'axios';
 
-import { api } from '../../config/axios.config';
+import { api, refreshMobileSession } from '../../config/axios.config';
 
 import {
   ServiceResponse,
   UserLoginResponse,
   UserRegisterInterface,
+  RefreshMobileResponse,
 } from '../../../domain';
 import { DeviceService } from './device.service';
 import type { User } from '../../../domain/interfaces/auth/auth.interface';
 import { handleApiError } from '../../../shared';
-import { TokenService } from './token.service';
 
 export class AuthService {
   static async registerUser(user: UserRegisterInterface) {
@@ -109,30 +109,16 @@ export class AuthService {
     }
   }
 
-  static async refresh(): Promise<ServiceResponse<undefined>> {
-    const refreshToken = await TokenService.getRefreshToken();
-
-    if (!refreshToken) {
-      return {
-        success: false,
-        message: 'No refresh token found',
-      };
-    }
-
+  static async refresh(): Promise<ServiceResponse<RefreshMobileResponse>> {
     try {
-      const response = await api.post('/api/auth/refresh-mobile', {
-        refreshToken,
-      });
+      const data = await refreshMobileSession();
 
       return {
         success: true,
-        data: response.data,
+        data,
       };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Session expired',
-      };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
 

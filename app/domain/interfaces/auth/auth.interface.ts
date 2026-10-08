@@ -45,6 +45,13 @@ export interface AuthCredentials {
   password: string;
 }
 
+export interface RefreshMobileResponse {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresIn: number;
+  refreshTokenExpiresIn: number;
+}
+
 /*
 
 export interface UserInterface {
