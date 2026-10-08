@@ -8,13 +8,12 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+$RNFirebaseDisableSPM = true
+$RNFirebaseAsStaticFramework = true
 
 target 'prowash_app_mobile' do
+  use_frameworks! :linkage => :static
+  
   config = use_native_modules!
 
   use_react_native!(
@@ -24,6 +23,15 @@ target 'prowash_app_mobile' do
   )
 
   post_install do |installer|
+    fmt_header = File.join(
+      installer.sandbox.root.to_s,
+      'fmt/include/fmt/base.h'
+    )
+
+    if File.file?(fmt_header)
+      File.chmod(File.stat(fmt_header).mode | 0o200, fmt_header)
+    end
+
     react_native_post_install(
       installer,
       config[:reactNativePath],
