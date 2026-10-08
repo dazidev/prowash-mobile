@@ -7,62 +7,44 @@ import {
   UserLoginResponse,
   UserRegisterInterface,
   RefreshMobileResponse,
+  UserRegisterResponse,
 } from '../../../domain';
 import { DeviceService } from './device.service';
 import type { User } from '../../../domain/interfaces/auth/auth.interface';
 import { handleApiError } from '../../../shared';
 
 export class AuthService {
-  static async registerUser(user: UserRegisterInterface) {
+  static async registerUser(
+    user: UserRegisterInterface,
+  ): Promise<ServiceResponse<UserRegisterResponse>> {
     try {
-      const response = await api.post('/api/auth/register/user', user);
-      return response.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
+      const response = await api.post<UserRegisterResponse>(
+        '/api/auth/register',
+        user,
+      );
+
       return {
-        success: false,
-        error: 'NETWORK_ERROR',
-        message: 'Unable to connect. Please try again later.',
+        success: true,
+        data: response.data,
       };
+    } catch (error: unknown) {
+      return handleApiError(error);
     }
   }
+
   static async sendEmailCode(): Promise<ServiceResponse<undefined>> {
     try {
       await api.post('/api/auth/send-email-code');
+
       return {
         success: true,
         message: 'Code sent',
       };
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
-      return {
-        success: false,
-        message: 'Unable to connect. Please try again later.',
-      };
+      return handleApiError(error);
     }
   }
-  static async requestNewCode(email: string) {
-    try {
-      const jsonEmail = {
-        email: email,
-      };
-      const response = await api.post('/api/auth/register/new-code', jsonEmail);
-      return response.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        return error.response.data;
-      }
-      return {
-        success: false,
-        error: 'NETWORK_ERROR',
-        message: 'Unable to connect. Please try again later.',
-      };
-    }
-  }
+
   static async confirmCode(code: string): Promise<ServiceResponse<undefined>> {
     try {
       await api.post('/api/auth/verify-email-code', { code });

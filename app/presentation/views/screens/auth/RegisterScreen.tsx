@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import {
   View,
   TextInput,
@@ -16,7 +16,6 @@ import BackgroundBubbles from '../../components/BackgroundBubbles';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useRegisterViewModel } from '../../../viewmodels/auth/RegisterViewModel';
-import { AuthContext } from '../../../context/AuthContext';
 import { InputPass } from '../../components/auth/InputPass';
 
 type RootStackParamList = {
@@ -32,7 +31,6 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
 
 const RegisterScreen = () => {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
-  const { setUser } = useContext(AuthContext);
   const {
     user,
     handleRegister,
@@ -41,23 +39,7 @@ const RegisterScreen = () => {
     setValidations,
     handleValidate,
     isLoading,
-    setIsLoading,
   } = useRegisterViewModel();
-
-  const handleSuccessRegister = async () => {
-    const id = await handleRegister();
-    setIsLoading(false);
-    if (id) {
-      console.log(id);
-      setUser({
-        id,
-        name: user.name,
-        lastname: user.lastname,
-        email: user.email,
-      });
-      navigation.navigate('EmailVerify');
-    }
-  };
 
   const handlePassword = (password: string) => {
     handleValidate('password', password);
@@ -166,7 +148,7 @@ const RegisterScreen = () => {
               title="Continue"
               color="#c8ff01"
               isLoading={isLoading}
-              onPress={handleSuccessRegister}
+              onPress={handleRegister}
             />
             {validations.error != '' && (
               <Text style={styles.error}>{validations.error}</Text>

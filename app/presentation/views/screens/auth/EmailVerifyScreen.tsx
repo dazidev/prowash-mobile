@@ -39,8 +39,6 @@ export const EmailVerifyScreen = () => {
     setIsLoading(false);
   };
 
-  console.log(user);
-
   return (
     <>
       <BackgroundBubbles />
@@ -99,7 +97,7 @@ export const EmailVerifyScreen = () => {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity
             disabled={timecode > 0}
-            onPress={() => user && resendCode(user.email)}
+            onPress={resendCode}
             style={{ opacity: timecode > 0 ? 0.5 : 1 }}
           >
             <Text style={styles.link}>RESEND CODE</Text>
@@ -126,7 +124,7 @@ export const EmailVerifyScreen = () => {
 
 export default EmailVerifyScreen;
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

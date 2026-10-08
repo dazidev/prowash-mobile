@@ -7,7 +7,8 @@ import type { TemplateCodeInterface } from '../../../domain';
 import { AuthContext } from '../../context/AuthContext';
 
 export const useEmailVerifyViewModel = () => {
-  const { setStatus } = useContext(AuthContext);
+  const { user, setUser, setStatus } = useContext(AuthContext);
+  const resendingRef = useRef(false);
   const [timecode, setTimecode] = useState<number>(0);
   const [error, setError] = useState<string>('');
 
@@ -18,7 +19,7 @@ export const useEmailVerifyViewModel = () => {
     param4: '',
   });
 
-  const [validations, setValidations] = useState({
+  const [, setValidations] = useState({
     param1: true,
     param2: true,
     param3: true,
@@ -51,15 +52,25 @@ export const useEmailVerifyViewModel = () => {
     }
   };
 
-  const resendCode = async (email: string) => {
-    const request = await AuthService.requestNewCode(email);
-    const { success, error, time } = request;
-    const timeInt = Math.floor(time);
-    if (success === false && error === 'TOO_MANY_REQUESTS') {
-      setTimecode(timeInt);
-    }
-    if (success === true) {
-      await AuthService.sendEmailCode();
+  const resendCode = async () => {
+    if (resendingRef.current || timecode > 0) return;
+
+    resendingRef.current = true;
+    setError('');
+
+    try {
+      const response = await AuthService.sendEmailCode();
+
+      if (!response.success) {
+        setError(response.message ?? 'Unable to resend the verification code.');
+        return;
+      }
+
+      setTimecode(60);
+    } catch {
+      setError('Unable to resend the verification code. Please try again.');
+    } finally {
+      resendingRef.current = false;
     }
   };
 
@@ -67,7 +78,7 @@ export const useEmailVerifyViewModel = () => {
     const stringCode = `${code.param1}${code.param2}${code.param3}${code.param4}`;
     const numberCode = Number(stringCode);
 
-    if (stringCode.length === 4 && 1000 <= numberCode && numberCode <= 9999) {
+    if (stringCode.length === 4 && numberCode >= 1000 && numberCode <= 9999) {
       const response = await AuthService.confirmCode(stringCode);
 
       if (response.success === false) {
@@ -75,6 +86,14 @@ export const useEmailVerifyViewModel = () => {
         return;
       }
 
+      if (user) {
+        setUser({
+          ...user,
+          isEmailVerified: true,
+        });
+      }
+
+      setError('');
       setStatus('authenticated');
       return;
     }

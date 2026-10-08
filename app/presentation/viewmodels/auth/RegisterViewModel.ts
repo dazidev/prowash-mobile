@@ -1,16 +1,18 @@
-import { useState } from 'react';
-import { AuthService } from '../../../infrastructure';
-import { getErrorUtil, ServerErrorCode } from '../../../shared';
+import { useRef, useState } from 'react';
+import { Alert } from 'react-native';
 
-//* tipiado.
+import { AuthService } from '../../../infrastructure';
+import { useAuth } from '../../hooks/auth/useAuth';
+
 import type {
-  AuthUserResponseInterface,
   UserRegisterInterface,
   ValidationsRegistrerInterface,
 } from '../../../domain';
 
 export const useRegisterViewModel = () => {
-  //* user
+  const { requireEmailVerification } = useAuth();
+  const submittingRef = useRef(false);
+
   const [user, setUser] = useState<UserRegisterInterface>({
     name: '',
     lastname: '',
@@ -18,12 +20,9 @@ export const useRegisterViewModel = () => {
     password: '',
   });
 
-  //* data
   const [repeatPassword, setRepeatPassword] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  //* validations
   const [validations, setValidations] = useState({
     name: true,
     lastname: true,
@@ -34,19 +33,14 @@ export const useRegisterViewModel = () => {
     error: '',
   });
 
-  //* loading
-  const [isLoading, setIsLoading] = useState(false);
-
   const verifyNameAndLastname = (text: string) =>
     /^[A-Za-zÀ-ÿ\s'-]{2,30}$/.test(text);
+
   const verifyEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const verifyPassword = (password: string) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(
-      password,
-    );
-  const verifySamePassword = (password: string, repeatPassword: string) =>
-    repeatPassword == password;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
 
   const handleValidation = (
     field: keyof ValidationsRegistrerInterface,
@@ -62,98 +56,118 @@ export const useRegisterViewModel = () => {
     switch (field) {
       case 'name':
       case 'lastname':
-        value = value.trim();
         setUser(prev => ({ ...prev, [field]: value }));
-        handleValidation(field, verifyNameAndLastname(value));
+        handleValidation(field, verifyNameAndLastname(value.trim()));
         break;
+
       case 'email':
-        value = value.trim();
-        setUser(prev => ({ ...prev, [field]: value }));
-        handleValidation(field, verifyEmail(value));
+        setUser(prev => ({ ...prev, email: value }));
+        handleValidation(field, verifyEmail(value.trim()));
         break;
+
       case 'password':
-        setUser(prev => ({ ...prev, [field]: value }));
+        setUser(prev => ({ ...prev, password: value }));
         handleValidation(field, verifyPassword(value));
         break;
+
       case 'samePassword':
         setRepeatPassword(value);
-        handleValidation(field, verifySamePassword(value, user.password!));
-        break;
-      default:
+        handleValidation(field, value === user.password);
         break;
     }
   };
 
-  const handleRegister = async (): Promise<string | null> => {
-    const nameIsOk = verifyNameAndLastname(user.name.trim());
-    const lastnameIsOk = verifyNameAndLastname(user.lastname.trim());
-    const emailIsOk = verifyEmail(user.email.trim());
-    const passwordIsOk = verifyPassword(user.password!);
-    const samePasswordIsOk = verifySamePassword(user.password!, repeatPassword);
+  const handleRegister = async (): Promise<void> => {
+    if (submittingRef.current) return;
 
-    setValidations(prev => ({ ...prev, name: nameIsOk }));
-    setValidations(prev => ({ ...prev, lastname: lastnameIsOk }));
-    setValidations(prev => ({ ...prev, email: emailIsOk }));
-    setValidations(prev => ({ ...prev, password: passwordIsOk }));
-    setValidations(prev => ({ ...prev, samePassword: samePasswordIsOk }));
+    const userBody = {
+      name: user.name.trim(),
+      lastname: user.lastname.trim(),
+      email: user.email.trim().toLowerCase(),
+      password: user.password,
+    };
+
+    const nameIsOk = verifyNameAndLastname(userBody.name);
+    const lastnameIsOk = verifyNameAndLastname(userBody.lastname);
+    const emailIsOk = verifyEmail(userBody.email);
+    const passwordIsOk = verifyPassword(userBody.password);
+    const samePasswordIsOk = userBody.password === repeatPassword;
+
+    setValidations(prev => ({
+      ...prev,
+      name: nameIsOk,
+      lastname: lastnameIsOk,
+      email: emailIsOk,
+      password: passwordIsOk,
+      samePassword: samePasswordIsOk,
+      error: '',
+    }));
 
     if (
-      !nameIsOk &&
-      !lastnameIsOk &&
-      !emailIsOk &&
-      !passwordIsOk &&
+      !nameIsOk ||
+      !lastnameIsOk ||
+      !emailIsOk ||
+      !passwordIsOk ||
       !samePasswordIsOk
     ) {
       handleValidation(
         'error',
-        'There are errors in one or more fields. Please review and correct them before continuing.',
+        'Please review and correct the highlighted fields.',
       );
-      return null;
+      return;
     }
+
     if (!validations.terms) {
       handleValidation(
         'error',
         'You must accept the terms and conditions to continue.',
       );
-      return null;
+      return;
     }
-    const result = await requestRegister();
-    return result;
-  };
 
-  const requestRegister = async (): Promise<string | null> => {
+    submittingRef.current = true;
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
+      const registration = await AuthService.registerUser(userBody);
 
-      const userBody = {
-        name: user.name,
-        lastname: user.lastname,
-        email: user.email,
-        password: user.password,
-      };
-
-      const response: AuthUserResponseInterface =
-        await AuthService.registerUser(userBody);
-
-      if (!response.success) {
+      if (!registration.success || !registration.data) {
         handleValidation(
           'error',
-          getErrorUtil(response.error as ServerErrorCode) ||
-            'An error occurred.',
+          registration.message ?? 'Unable to create your account.',
         );
-        return null;
+        return;
       }
 
-      const { id, name, lastname, email } = response.data;
+      const login = await AuthService.login(userBody.email, userBody.password);
 
-      await AuthService.sendEmailCode(email, name, lastname, id);
-      return id;
-    } catch (error) {
+      if (!login.success || !login.data) {
+        handleValidation(
+          'error',
+          'Your account was created, but sign-in failed. Please use Log In to continue.',
+        );
+        return;
+      }
+
+      await requireEmailVerification(login.data.user, login.data.tokens);
+
+      const codeResponse = await AuthService.sendEmailCode();
+
+      if (!codeResponse.success) {
+        Alert.alert(
+          'Verification code',
+          codeResponse.message ??
+            'Unable to send the code. Use RESEND CODE to try again.',
+        );
+      }
+    } catch {
       handleValidation(
         'error',
-        'A network error occurred. Please try again later.',
+        'Unable to complete registration. If your account was created, use Log In to continue.',
       );
-      return null;
+    } finally {
+      submittingRef.current = false;
+      setIsLoading(false);
     }
   };
 
@@ -165,6 +179,5 @@ export const useRegisterViewModel = () => {
     repeatPassword,
     handleValidate,
     isLoading,
-    setIsLoading,
   };
 };

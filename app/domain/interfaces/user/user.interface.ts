@@ -81,3 +81,13 @@ export type UserQuoteResponseUpdated = Pick<
   | 'appointmentVersion'
   | 'updatedAt'
 >;
+
+export interface UserRegisterResponse {
+  id: string;
+  name: string;
+  lastname: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  token: string;
+}
