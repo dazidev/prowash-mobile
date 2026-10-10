@@ -1,101 +1,154 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, Linking } from 'react-native';
+import React, { useState } from 'react';
+import {
+  Alert,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { WebView } from 'react-native-webview';
+import { parseVimeoVideo } from '../../../../domain/utils/parseVimeoVideo';
 
 type Props = {
-  videoId: string; // p. ej. "399973319"
-  h?: string; // hash del embed, p. ej. "5db959b2dc"
+  videoId: string;
+  h?: string;
   autoplay?: boolean;
   loop?: boolean;
   muted?: boolean;
   controls?: boolean;
 };
 
-export const VimeoWebView: React.FC<Props> = ({
-  videoId = '323783503',
+export const VimeoWebView = ({
+  videoId,
   h,
   autoplay = false,
   loop = false,
   muted = false,
   controls = true,
-}) => {
-  const [blocked, setBlocked] = useState(false);
+}: Props) => {
+  const video = parseVimeoVideo(videoId, h);
 
-  const params = useMemo(() => {
-    // Si prefieres evitar URLSearchParams en RN, puedes armar la string manual
-    return [
-      //`h=${encodeURIComponent(h)}`,
-      `autoplay=${autoplay ? 1 : 0}`,
-      `loop=${loop ? 1 : 0}`,
-      `muted=${muted ? 1 : 0}`,
-      `controls=${controls ? 1 : 0}`,
-      `playsinline=1`,
-      `dnt=1`,
-      `app_id=react-native`,
-    ].join('&');
-  }, [h, autoplay, loop, muted, controls]);
-
-  const src = `https://player.vimeo.com/video/${videoId}?${params}`;
-
-  if (blocked) {
-    // Fallback simple si el WebView intenta abrir about:srcdoc / políticas del dueño bloquean el embed
-    return (
-      <View
-        style={{
-          width: '100%',
-          aspectRatio: 16 / 9,
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-        }}
-      >
-        <Text
-          style={{ color: '#888', textAlign: 'center', paddingHorizontal: 12 }}
-        >
-          Este video no permite reproducción embebida en apps o la conexión no
-          pudo validarse.
-        </Text>
-        <TouchableOpacity
-          onPress={() =>
-            Linking.openURL(`https://vimeo.com/${videoId}`).catch(() => {})
-          }
-          style={{
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-            backgroundColor: '#1f2937',
-            borderRadius: 8,
-          }}
-        >
-          <Text style={{ color: 'white' }}>Abrir en Vimeo</Text>
-        </TouchableOpacity>
-      </View>
-    );
+  if (!video) {
+    return <Text style={styles.message}>Invalid Vimeo ID or URL.</Text>;
   }
 
+  const params = [
+    `autoplay=${autoplay ? 1 : 0}`,
+    `loop=${loop ? 1 : 0}`,
+    `muted=${muted ? 1 : 0}`,
+    `controls=${controls ? 1 : 0}`,
+    'playsinline=1',
+    'dnt=1',
+  ].join('&');
+
+  const src = `${video.embedUrl}${video.hash ? '&' : '?'}${params}`;
+
   return (
-    <View style={{ width: '100%', aspectRatio: 16 / 9 }}>
-      <WebView
-        source={{ uri: src }}
-        // ✅ claves para iOS / RN
-        allowsFullscreenVideo
-        allowsInlineMediaPlayback
-        javaScriptEnabled
-        domStorageEnabled
-        mediaPlaybackRequiresUserAction={false}
-        setSupportMultipleWindows={false}
-        scrollEnabled={false}
-        // ✅ Bloquea about:srcdoc / about:blank (el warning que te salió)
-        onShouldStartLoadWithRequest={req => {
-          const url = req.url || '';
-          if (url.startsWith('about:')) {
-            setBlocked(true);
-            return false;
-          }
-          return true;
-        }}
-        // ✅ Si algo falla (política de dominio/hash), mostramos fallback
-        onError={() => setBlocked(true)}
-      />
+    <VimeoContent
+      key={src}
+      src={src}
+      watchUrl={video.watchUrl}
+      autoplay={autoplay}
+    />
+  );
+};
+
+const VimeoContent = ({
+  src,
+  watchUrl,
+  autoplay,
+}: {
+  src: string;
+  watchUrl: string;
+  autoplay: boolean;
+}) => {
+  const [failed, setFailed] = useState(false);
+
+  const openVimeo = () => {
+    Linking.openURL(watchUrl).catch(() => {
+      Alert.alert('Unable to open Vimeo', 'Please try again.');
+    });
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.player}>
+        {failed ? (
+          <View style={styles.error}>
+            <Text style={styles.message}>Unable to load this video.</Text>
+
+            <TouchableOpacity
+              onPress={() => setFailed(false)}
+              style={styles.retry}
+            >
+              <Text style={styles.retryText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <WebView
+            source={{ uri: src }}
+            originWhitelist={['https://*', 'about:*']}
+            allowsFullscreenVideo
+            allowsInlineMediaPlayback
+            javaScriptEnabled
+            domStorageEnabled
+            mediaPlaybackRequiresUserAction={!autoplay}
+            setSupportMultipleWindows={false}
+            scrollEnabled={false}
+            onShouldStartLoadWithRequest={request => {
+              const url = request.url ?? '';
+
+              if (request.isTopFrame === false) return true;
+              if (/^about:(blank|srcdoc)([?#]|$)/.test(url)) return true;
+
+              return /^https:\/\/player\.vimeo\.com(?:\/|$)/i.test(url);
+            }}
+            onError={({ nativeEvent }) => {
+              if (!nativeEvent.url || nativeEvent.url === src) {
+                setFailed(true);
+              }
+            }}
+            onHttpError={({ nativeEvent }) => {
+              if (nativeEvent.url === src && nativeEvent.statusCode >= 400) {
+                setFailed(true);
+              }
+            }}
+          />
+        )}
+      </View>
+
+      <TouchableOpacity onPress={openVimeo} accessibilityRole="link">
+        <Text style={styles.link}>Open in Vimeo</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { width: '100%' },
+  player: { width: '100%', aspectRatio: 16 / 9 },
+  error: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  message: {
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 12,
+  },
+  retry: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+  },
+  retryText: { color: 'white' },
+  link: {
+    color: '#1d4ed8',
+    textDecorationLine: 'underline',
+    marginTop: 4,
+  },
+});
