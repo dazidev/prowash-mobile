@@ -1,12 +1,5 @@
 import { AdvService } from '../../../infrastructure';
 
-export const HomeScreenViewModel = () => {
-  const getAdvertising = async () => {
-    const adv = await AdvService.getAdvertising(); //! todo: procesar la respuesta y dar una correspondiente al visual
-    return adv;
-  };
+const getAdvertising = () => AdvService.getAdvertising();
 
-  return {
-    getAdvertising,
-  };
-};
+export const HomeScreenViewModel = () => ({ getAdvertising });
